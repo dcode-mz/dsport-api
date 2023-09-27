@@ -19,3 +19,83 @@ model Sport {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+
+model Club {
+  id           Int       @id @default(autoincrement())
+  name         String
+  description  String?
+  logo         String?
+  leagues      League[]
+  games        Game[]
+  Athlete      Athlete[]
+  foundingDate DateTime
+  website      String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  news         News[]
+  homeGames    Game[]    @relation("homeTeam")
+  awayGames    Game[]    @relation("awayTeam")
+}
+
+model League {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  clubs       Club[]
+  games       Game[]
+  organizer   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Game {
+  id       Int      @id @default(autoincrement())
+  dateTime DateTime
+  stadium  String
+
+  homeTeam       Club @relation("homeTeam", fields: [homeTeamClubId], references: [id])
+  homeTeamClubId Int
+
+  awayTeam       Club    @relation("awayTeam", fields: [awayTeamClubId], references: [id])
+  awayTeamClubId Int
+  resultHomeTeam Int
+  resultAwayTeam Int
+  League         League? @relation(fields: [leagueId], references: [id])
+  leagueId       Int?
+
+  referee    String
+  attendance Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Club       Club?    @relation(fields: [clubId], references: [id])
+  clubId     Int?
+}
+
+model Athlete {
+  id          Int      @id @default(autoincrement())
+  name        String
+  position    String
+  currentClub Club     @relation(fields: [clubId], references: [id])
+  dateOfBirth DateTime
+  nationality String
+  height      Float
+  weight      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  clubId Int
+}
+
+model News {
+  id             Int      @id @default(autoincrement())
+  title          String
+  content        String
+  publishDate    DateTime
+  author         String
+  associatedClub Club     @relation(fields: [clubId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  clubId         Int
+}
