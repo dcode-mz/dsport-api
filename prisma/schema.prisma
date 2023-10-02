@@ -20,6 +20,8 @@ model Sport {
   clubs       Club[]   @relation("SportClub")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("sport")
 }
 
 model League {
@@ -38,6 +40,8 @@ model League {
   seasons     Season[] @relation("SeasonLeagues")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("league")
 }
 
 model Cup {
@@ -56,6 +60,8 @@ model Cup {
   seasons     Season[] @relation("SeasonCups")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("cup")
 }
 
 model Season {
@@ -67,6 +73,8 @@ model Season {
   cups      Cup[]    @relation("SeasonCups")
   League    League[]
   Cup       Cup[]
+
+  @@map("season")
 }
 
 model Club {
@@ -86,6 +94,8 @@ model Club {
   awayTeamGames Game[]    @relation("AwayTeam")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@map("club")
 }
 
 model Game {
@@ -109,6 +119,8 @@ model Game {
   clubId         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@map("game")
 }
 
 model Athlete {
@@ -124,6 +136,8 @@ model Athlete {
   clubId      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("athlete")
 }
 
 model News {
@@ -136,4 +150,6 @@ model News {
   clubId         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@map("news")
 }
