@@ -6,96 +6,134 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model Sport {
-  id          Int       @id @default(autoincrement())
+  id          String   @id @default(uuid())
   name        String
+  icon        String
   description String?
-  startAt     DateTime?
-  endAt       DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Club {
-  id           Int       @id @default(autoincrement())
-  name         String
-  description  String?
-  logo         String?
-  leagues      League[]
-  games        Game[]
-  Athlete      Athlete[]
-  foundingDate DateTime
-  website      String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  news         News[]
-  homeGames    Game[]    @relation("homeTeam")
-  awayGames    Game[]    @relation("awayTeam")
+  leagues     League[]
+  cups        Cup[]
+  clubs       Club[]   @relation("SportClub")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model League {
-  id          Int       @id @default(autoincrement())
+  id          String   @id @default(uuid())
   name        String
   description String?
-  startDate   DateTime?
-  endDate     DateTime?
-  clubs       Club[]
-  games       Game[]
+  logo        String?
+  country     String   @default("Mozambique")
   organizer   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  Sport       Sport    @relation(fields: [sportId], references: [id])
+  sportId     String
+  clubs       Club[]   @relation("LeagueClubs")
+  games       Game[]
+  Season      Season   @relation(fields: [seasonId], references: [id])
+  seasonId    String
+  seasons     Season[] @relation("SeasonLeagues")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Cup {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  logo        String?
+  country     String   @default("Mozambique")
+  organizer   String
+  sport       Sport    @relation(fields: [sportId], references: [id])
+  sportId     String
+  clubs       Club[]   @relation("CupClub")
+  games       Game[]
+  Season      Season   @relation(fields: [seasonId], references: [id])
+  seasonId    String
+  seasons     Season[] @relation("SeasonCups")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Season {
+  id        String   @id @default(uuid())
+  year      Int
+  startDate DateTime
+  endDate   DateTime
+  leagues   League[] @relation("SeasonLeagues")
+  cups      Cup[]    @relation("SeasonCups")
+  League    League[]
+  Cup       Cup[]
+}
+
+model Club {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  logo          String?
+  foundingDate  DateTime
+  website       String?
+  leagues       League[]  @relation("LeagueClubs")
+  cups          Cup[]     @relation("CupClub")
+  games         Game[]
+  Athlete       Athlete[]
+  news          News[]
+  sports        Sport[]   @relation("SportClub")
+  homeTeamGames Game[]    @relation("HomeTeam")
+  awayTeamGames Game[]    @relation("AwayTeam")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Game {
-  id       Int      @id @default(autoincrement())
-  dateTime DateTime
-  stadium  String
-
-  homeTeam       Club @relation("homeTeam", fields: [homeTeamClubId], references: [id])
-  homeTeamClubId Int
-
-  awayTeam       Club    @relation("awayTeam", fields: [awayTeamClubId], references: [id])
-  awayTeamClubId Int
+  id             String   @id @default(uuid())
+  dateTime       DateTime
+  stadium        String
+  location       String
+  referee        String
+  attendance     Float
   resultHomeTeam Int
   resultAwayTeam Int
-  League         League? @relation(fields: [leagueId], references: [id])
-  leagueId       Int?
-
-  referee    String
-  attendance Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Club       Club?    @relation(fields: [clubId], references: [id])
-  clubId     Int?
+  homeTeam       Club     @relation("HomeTeam", fields: [homeTeamClubId], references: [id])
+  homeTeamClubId String
+  awayTeam       Club     @relation("AwayTeam", fields: [awayTeamClubId], references: [id])
+  awayTeamClubId String
+  League         League?  @relation(fields: [leagueId], references: [id])
+  leagueId       String?
+  Cup            Cup?     @relation(fields: [cupId], references: [id])
+  cupId          String?
+  Club           Club     @relation(fields: [clubId], references: [id])
+  clubId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Athlete {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   name        String
   position    String
-  currentClub Club     @relation(fields: [clubId], references: [id])
   dateOfBirth DateTime
   nationality String
   height      Float
   weight      Float
+  photoUrl    String?
+  currentClub Club?    @relation(fields: [clubId], references: [id])
+  clubId      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  clubId Int
 }
 
 model News {
-  id             Int      @id @default(autoincrement())
+  id             String   @id @default(uuid())
   title          String
   content        String
   publishDate    DateTime
   author         String
   associatedClub Club     @relation(fields: [clubId], references: [id])
+  clubId         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  clubId         Int
 }
