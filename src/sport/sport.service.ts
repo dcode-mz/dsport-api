@@ -7,28 +7,45 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class SportService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createSportDto: CreateSportDto) {
-    return this.prismaService.sport.create({
+  async create(createSportDto: CreateSportDto) {
+    const { name, description, icon } = createSportDto;
+    const user = await this.prismaService.sport.create({
       data: {
-        name: createSportDto.name,
-        description: createSportDto.description,
+        name,
+        description,
+        icon,
       },
     });
+    return user;
   }
 
-  findAll() {
-    return this.prismaService.sport.findMany();
+  async findAll() {
+    const users = await this.prismaService.sport.findMany();
+    return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} sport`;
+  async findOne(id: string) {
+    const user = await this.prismaService.sport.findUnique({ where: { id } });
+    return user;
   }
 
-  update(id: number, updateSportDto: UpdateSportDto) {
-    return `This action updates a #${id} sport`;
+  async update(id: string, updateSportDto: UpdateSportDto) {
+    const { name, description, icon } = updateSportDto;
+    const user = await this.prismaService.sport.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        icon,
+      },
+    });
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sport`;
+  async remove(id: string) {
+    const user = this.prismaService.sport.delete({
+      where: { id },
+    });
+    return user;
   }
 }
