@@ -5,12 +5,20 @@ import { SportModule } from './sport/sport.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { ClubModule } from './club/club.module';
+import { LeagueModule } from './league/league.module';
+import { CupModule } from './cup/cup.module';
+import { SeasonModule } from './season/season.module';
 
 @Module({
   imports: [
     SportModule,
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    ClubModule,
+    LeagueModule,
+    CupModule,
+    SeasonModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
