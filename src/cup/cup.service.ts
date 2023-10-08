@@ -1,26 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCupDto } from './dto/create-cup.dto';
 import { UpdateCupDto } from './dto/update-cup.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CupService {
-  create(createCupDto: CreateCupDto) {
-    return 'This action adds a new cup';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async create(createCupDto: CreateCupDto) {
+    const { name, description, country, logo, organizer, seasonId, sportId } =
+      createCupDto;
+
+    const league = await this.prismaService.cup.create({
+      data: { name, description, country, logo, organizer, seasonId, sportId },
+    });
+    return league;
   }
 
-  findAll() {
-    return `This action returns all cup`;
+  async findAll() {
+    const cup = await this.prismaService.cup.findMany();
+    return cup;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cup`;
+  async findOne(id: string) {
+    const cup = await this.prismaService.cup.findUnique({
+      where: { id },
+    });
+    return cup;
   }
 
-  update(id: number, updateCupDto: UpdateCupDto) {
-    return `This action updates a #${id} cup`;
+  async update(id: string, updateCupDto: UpdateCupDto) {
+    const { name, description, country, logo, organizer, seasonId, sportId } =
+      updateCupDto;
+    const cup = await this.prismaService.cup.update({
+      where: { id },
+      data: { name, description, country, logo, organizer, seasonId, sportId },
+    });
+    return cup;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cup`;
+  async remove(id: string) {
+    const cup = await this.prismaService.league.delete({
+      where: { id },
+    });
+    return cup;
   }
 }

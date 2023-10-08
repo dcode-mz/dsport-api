@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CupService } from './cup.service';
 import { CreateCupDto } from './dto/create-cup.dto';
 import { UpdateCupDto } from './dto/update-cup.dto';
@@ -19,16 +27,16 @@ export class CupController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cupService.findOne(+id);
+    return this.cupService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCupDto: UpdateCupDto) {
-    return this.cupService.update(+id, updateCupDto);
+    return this.cupService.update(id, updateCupDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cupService.remove(+id);
+    return this.cupService.remove(id);
   }
 }
