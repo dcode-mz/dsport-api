@@ -43,7 +43,7 @@ export class SportService {
   }
 
   async remove(id: string) {
-    const user = this.prismaService.sport.delete({
+    const user = await this.prismaService.sport.delete({
       where: { id },
     });
     return user;
