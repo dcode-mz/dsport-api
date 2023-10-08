@@ -1,26 +1,60 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateSeasonDto } from './dto/create-season.dto';
 import { UpdateSeasonDto } from './dto/update-season.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SeasonService {
-  create(createSeasonDto: CreateSeasonDto) {
-    return 'This action adds a new season';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async create(createSeasonDto: CreateSeasonDto) {
+    const { year, startDate, endDate } = createSeasonDto;
+    const startDateObject = new Date(startDate);
+    const endDateObject = new Date(endDate);
+    if (isNaN(startDateObject.getTime()) && isNaN(endDateObject.getTime())) {
+      throw new HttpException(
+        'A data deve estar no formato AAAA-MM-DD',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const season = await this.prismaService.season.create({
+      data: {
+        year,
+        startDate: startDateObject,
+        endDate: endDateObject,
+      },
+    });
+    return season;
   }
 
-  findAll() {
-    return `This action returns all season`;
+  async findAll() {
+    const users = await this.prismaService.season.findMany();
+    return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} season`;
+  async findOne(id: string) {
+    const user = await this.prismaService.season.findUnique({ where: { id } });
+    return user;
   }
 
-  update(id: number, updateSeasonDto: UpdateSeasonDto) {
-    return `This action updates a #${id} season`;
+  async update(id: string, updateSeasonDto: UpdateSeasonDto) {
+    const { year, startDate, endDate } = updateSeasonDto;
+    const user = await this.prismaService.season.update({
+      where: { id },
+      data: {
+        year,
+        startDate,
+        endDate,
+      },
+    });
+    return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} season`;
+  async remove(id: string) {
+    const season = await this.prismaService.season.delete({
+      where: { id },
+    });
+    return season;
   }
 }

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SeasonService } from './season.service';
 import { CreateSeasonDto } from './dto/create-season.dto';
 import { UpdateSeasonDto } from './dto/update-season.dto';
@@ -19,16 +27,16 @@ export class SeasonController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.seasonService.findOne(+id);
+    return this.seasonService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSeasonDto: UpdateSeasonDto) {
-    return this.seasonService.update(+id, updateSeasonDto);
+    return this.seasonService.update(id, updateSeasonDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.seasonService.remove(+id);
+    return this.seasonService.remove(id);
   }
 }

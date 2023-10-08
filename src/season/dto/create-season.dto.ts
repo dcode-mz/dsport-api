@@ -1,18 +1,12 @@
-import { IsInt, IsDate, IsUUID } from 'class-validator';
+import { IsInt, IsDateString } from 'class-validator';
 
 export class CreateSeasonDto {
   @IsInt()
   year: number;
 
-  @IsDate()
-  startDate: Date;
+  @IsDateString()
+  startDate: string;
 
-  @IsDate()
-  endDate: Date;
-
-  @IsUUID()
-  leagueId: string;
-
-  @IsUUID()
-  cupId: string;
+  @IsDateString()
+  endDate: string;
 }
