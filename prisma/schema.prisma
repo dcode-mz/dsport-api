@@ -73,6 +73,8 @@ model Season {
   cups      Cup[]    @relation("SeasonCups")
   League    League[]
   Cup       Cup[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("season")
 }
