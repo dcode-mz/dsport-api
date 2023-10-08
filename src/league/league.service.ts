@@ -1,26 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { CreateLeagueDto } from './dto/create-league.dto';
 import { UpdateLeagueDto } from './dto/update-league.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class LeagueService {
-  create(createLeagueDto: CreateLeagueDto) {
-    return 'This action adds a new league';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async create(createLeagueDto: CreateLeagueDto) {
+    const { name, description, country, logo, organizer, seasonId, sportId } =
+      createLeagueDto;
+
+    const league = await this.prismaService.league.create({
+      data: { name, description, country, logo, organizer, seasonId, sportId },
+    });
+    return league;
   }
 
-  findAll() {
-    return `This action returns all league`;
+  async findAll() {
+    const league = await this.prismaService.league.findMany();
+    return league;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} league`;
+  async findOne(id: string) {
+    const league = await this.prismaService.league.findUnique({
+      where: { id },
+    });
+    return league;
   }
 
-  update(id: number, updateLeagueDto: UpdateLeagueDto) {
-    return `This action updates a #${id} league`;
+  async update(id: string, updateLeagueDto: UpdateLeagueDto) {
+    const { name, description, country, logo, organizer, seasonId, sportId } =
+      updateLeagueDto;
+    const league = await this.prismaService.league.update({
+      where: { id },
+      data: { name, description, country, logo, organizer, seasonId, sportId },
+    });
+    return league;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} league`;
+  async remove(id: string) {
+    const league = await this.prismaService.league.delete({
+      where: { id },
+    });
+    return league;
   }
 }
