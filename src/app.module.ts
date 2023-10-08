@@ -9,6 +9,7 @@ import { ClubModule } from './club/club.module';
 import { LeagueModule } from './league/league.module';
 import { CupModule } from './cup/cup.module';
 import { SeasonModule } from './season/season.module';
+import { AthleteModule } from './athlete/athlete.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SeasonModule } from './season/season.module';
     LeagueModule,
     CupModule,
     SeasonModule,
+    AthleteModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
