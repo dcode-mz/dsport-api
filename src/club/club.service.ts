@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -8,36 +8,73 @@ export class ClubService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(createClubDto: CreateClubDto) {
     try {
-      const { name, description, foundingDate: date } = createClubDto;
+      const {
+        name,
+        description,
+        foundingDate: date,
+        logo,
+        website,
+      } = createClubDto;
       const foundingDate = new Date(date);
 
-      const createdClub = await this.prismaService.club.create({
+      if (isNaN(foundingDate.getTime())) {
+        throw new HttpException(
+          'A data deve estar no formato AAAA-MM-DD',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const club = await this.prismaService.club.create({
         data: {
           name,
           description,
           foundingDate,
+          logo,
+          website,
         },
       });
 
-      return createdClub;
+      return club;
     } catch (error) {
       throw new Error('Erro ao criar o clube: ' + error.message);
     }
   }
 
-  findAll() {
-    return `This action returns all club`;
+  async findAll() {
+    const club = await this.prismaService.club.findMany();
+    return club;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} club`;
+  async findOne(id: string) {
+    const club = await this.prismaService.club.findUnique({ where: { id } });
+    return club;
   }
 
-  update(id: number, updateClubDto: UpdateClubDto) {
-    return `This action updates a #${id} club`;
+  async update(id: string, updateClubDto: UpdateClubDto) {
+    const {
+      name,
+      description,
+      foundingDate: date,
+      logo,
+      website,
+    } = updateClubDto;
+    const club = await this.prismaService.club.update({
+      where: { id },
+      data: {
+        name,
+        description,
+        foundingDate: date,
+        logo,
+        website,
+      },
+    });
+    return club;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} club`;
+  async remove(id: string) {
+    const club = await this.prismaService.club.delete({
+      where: { id },
+    });
+    return club;
   }
 }

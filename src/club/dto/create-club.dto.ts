@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsDateString, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateClubDto {
   @IsString()
@@ -12,7 +12,7 @@ export class CreateClubDto {
   @IsString()
   logo?: string;
 
-  @IsString()
+  @IsDateString()
   foundingDate: Date;
 
   @IsOptional()
