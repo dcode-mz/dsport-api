@@ -10,11 +10,21 @@ import {
 import { SportService } from './sport.service';
 import { CreateSportDto } from './dto/create-sport.dto';
 import { UpdateSportDto } from './dto/update-sport.dto';
+import {
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('sport')
 @Controller('sport')
 export class SportController {
   constructor(private readonly sportService: SportService) {}
 
+  @ApiCreatedResponse({
+    description: 'The record has been successfully created.',
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @Post()
   create(@Body() createSportDto: CreateSportDto) {
     return this.sportService.create(createSportDto);

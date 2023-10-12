@@ -89,7 +89,7 @@ model Club {
   leagues       League[]  @relation("LeagueClubs")
   cups          Cup[]     @relation("CupClub")
   games         Game[]
-  Athlete       Athlete[]
+  athlete       Athlete[]
   news          News[]
   sports        Sport[]   @relation("SportClub")
   homeTeamGames Game[]    @relation("HomeTeam")
@@ -107,20 +107,20 @@ model Game {
   location       String
   referee        String
   attendance     Float
-  resultHomeTeam Int
-  resultAwayTeam Int
-  homeTeam       Club     @relation("HomeTeam", fields: [homeTeamClubId], references: [id])
-  homeTeamClubId String
-  awayTeam       Club     @relation("AwayTeam", fields: [awayTeamClubId], references: [id])
-  awayTeamClubId String
+  resultHomeTeam Int?
+  resultAwayTeam Int?
+  homeTeam       Club     @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  homeTeamId     String
+  awayTeam       Club     @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  awayTeamId     String
   League         League?  @relation(fields: [leagueId], references: [id])
-  leagueId       String?
   Cup            Cup?     @relation(fields: [cupId], references: [id])
-  cupId          String?
-  Club           Club     @relation(fields: [clubId], references: [id])
-  clubId         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  Club           Club?    @relation(fields: [clubId], references: [id])
+  clubId         String?
+  leagueId       String?
+  cupId          String?
 
   @@map("game")
 }
