@@ -18,6 +18,12 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('sport')
+    .addTag('season')
+    .addTag('league')
+    .addTag('cup')
+    .addTag('club')
+    .addTag('athlete')
+    .addTag('news')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);

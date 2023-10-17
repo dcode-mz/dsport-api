@@ -10,7 +10,9 @@ import {
 import { SeasonService } from './season.service';
 import { CreateSeasonDto } from './dto/create-season.dto';
 import { UpdateSeasonDto } from './dto/update-season.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('season')
 @Controller('season')
 export class SeasonController {
   constructor(private readonly seasonService: SeasonService) {}

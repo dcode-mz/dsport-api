@@ -10,7 +10,9 @@ import {
 import { CupService } from './cup.service';
 import { CreateCupDto } from './dto/create-cup.dto';
 import { UpdateCupDto } from './dto/update-cup.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('cup')
 @Controller('cup')
 export class CupController {
   constructor(private readonly cupService: CupService) {}

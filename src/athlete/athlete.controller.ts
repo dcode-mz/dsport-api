@@ -10,7 +10,9 @@ import {
 import { AthleteService } from './athlete.service';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('athlete')
 @Controller('athlete')
 export class AthleteController {
   constructor(private readonly athleteService: AthleteService) {}
