@@ -11,7 +11,7 @@ export class CreateSportDto {
 
   @ApiProperty({
     description: 'Icon of the sport',
-    example: 'football-icon.png',
+    example: 'football_icon.svg',
   })
   @IsString()
   icon: string;
