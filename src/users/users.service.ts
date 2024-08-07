@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -19,16 +19,21 @@ export class UsersService {
     }
 
     async create(createUserDto: CreateUserDto): Promise<UserDto> {
-        if(!createUserDto) throw new NotFoundException()
+
         const passEncrypted = await bcrypt.hash(createUserDto.password, 12)
         createUserDto.password = passEncrypted
         try {
             const user = await this.prismaService.user.create({
                 data: createUserDto
             });
+
             return user;
         } catch (error) {
-            throw new BadRequestException({ auth: false, msg: "Não foi possível criar o usuário: " + error})
+            if (error instanceof ConflictException) {
+                // this.logger.log("Já existe usuário com este endereço de email: " + error);
+                throw new ConflictException("Já existe usuário com este endereço de email")
+            }
+            throw new InternalServerErrorException("Não foi possível criar o usuário")
         }
     }   
     

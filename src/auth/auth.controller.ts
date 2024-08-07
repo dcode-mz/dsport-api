@@ -7,6 +7,11 @@ import { Response } from 'express';
 import { ResponseBody } from 'src/dto/ResponseBody';
 import { ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 
+class CreateUserResponse {
+  user: UserDto;
+  access_token: String;
+}
+
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
@@ -19,20 +24,28 @@ export class AuthController {
     @ApiForbiddenResponse({ description: 'Forbidden.' })
     @Post('sign-up')
     async create(@Body() authCreateUserDto: AuthCreateUserDto, @Res() res: Response) {
-      const user = await this.authService.create(authCreateUserDto)
-    //   if (!user) throw new HttpException({ auth: false, msg: "Não foi possível criar o usuário", status: HttpStatus.NOT_FOUND }, HttpStatus.NOT_FOUND)
-      const { access_token } = await this.authService.login(user)
-      const response = new ResponseBody<{user: UserDto, access_token: String}>("Usuário criado com sucesso",  { user, access_token }, true);
-      res.status(HttpStatus.CREATED).json(response);
-
+      try {
+        const user = await this.authService.create(authCreateUserDto)
+        const { access_token } = await this.authService.login(user)
+        const response = new ResponseBody<CreateUserResponse>("Usuário criado com sucesso",  { user, access_token }, true);
+        res.status(HttpStatus.CREATED).json(response);
+      } catch(error: any) {
+        const response = new ResponseBody(error.message,  null, false);
+        res.status(error.status).json(response);
+      }
     }
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@Request() req, @Res() res: Response) {
-        const { access_token } = await this.authService.login(req.user);
+    async login(@Body() login: UserDto, @Res() res: Response) {
+      try{
+        const { access_token } = await this.authService.login(login);
         const response = new ResponseBody<{access_token: String}>("Logado com sucesso", {access_token}, true);
         res.status(HttpStatus.OK).json(response);
+      } catch(error: any) {
+        const response = new ResponseBody(error.message,  null, false);
+        res.status(error.status).json(response);
+      }
     }
 
     @UseGuards(JwtAuthGuard)
