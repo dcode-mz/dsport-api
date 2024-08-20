@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthCreateUserDto, UserDto } from './dto';
 import * as nodemailer from 'nodemailer';
 import * as speakeasy from 'speakeasy';
-import { addMinutes, addSeconds } from 'date-fns';
+import { addSeconds } from 'date-fns';
 
 @Injectable()
 export class AuthService {
