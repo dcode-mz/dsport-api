@@ -46,7 +46,7 @@ export class CreateLeagueDto {
   })
   @IsString()
   sportId: string;
-  
+
   @ApiProperty({
     description: 'Id of the season',
     example: 'ebaf95bc-cba2-493d-8086-73ddbd764334',

@@ -7,6 +7,6 @@ import { SportModule } from 'src/sport/sport.module';
 @Module({
   controllers: [ClubController],
   providers: [ClubService],
-  imports: [LeagueModule, SportModule]
+  imports: [LeagueModule, SportModule],
 })
 export class ClubModule {}

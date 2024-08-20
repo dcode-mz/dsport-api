@@ -50,56 +50,52 @@ export class SportService {
   }
 
   async findSportsWithLeagues() {
-    const sports = await this.prismaService.sport.findMany(
-      {
-        include: {
-          leagues: true,
-        }
-      }
-    );
+    const sports = await this.prismaService.sport.findMany({
+      include: {
+        leagues: true,
+      },
+    });
     return sports;
   }
 
   async findSportsWithLeaguesAndClubs() {
-    const sports = await this.prismaService.sport.findMany(
-      {
-        include: {
-          leagues: {
-            include : {
-              clubs: {
-                select: {
-                  id: true,
-                  name: true,
-                  shortName: true,
-                  logo: true,
-                }
-              }
-            }
+    const sports = await this.prismaService.sport.findMany({
+      include: {
+        leagues: {
+          include: {
+            clubs: {
+              select: {
+                id: true,
+                name: true,
+                shortName: true,
+                logo: true,
+              },
+            },
           },
-        }
-      }
-    );
-    return sports.map(sport => ({
+        },
+      },
+    });
+    return sports.map((sport) => ({
       id: sport.id,
       name: sport.name,
       icon: sport.icon,
-      clubs: sport.leagues.flatMap(league => league.clubs)
+      clubs: sport.leagues.flatMap((league) => league.clubs),
     }));
   }
 }
 
-  // async findSportsWithLeagues(sportIds: string[]) {
-  //   const sports = await this.prismaService.sport.findMany(
-  //     {
-  //       where: {
-  //         id: {
-  //           in: sportIds,
-  //         }
-  //       },
-  //       include: {
-  //         leagues: true,
-  //       }
-  //     }
-  //   );
-  //   return sports;
-  // }
+// async findSportsWithLeagues(sportIds: string[]) {
+//   const sports = await this.prismaService.sport.findMany(
+//     {
+//       where: {
+//         id: {
+//           in: sportIds,
+//         }
+//       },
+//       include: {
+//         leagues: true,
+//       }
+//     }
+//   );
+//   return sports;
+// }

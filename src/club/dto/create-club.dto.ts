@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDateString, IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateClubDto {
   @ApiProperty({
@@ -43,7 +49,7 @@ export class CreateClubDto {
   @ApiProperty({
     description: 'Website of the cub',
     example: 'https://associacaoblackbulls.com/',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsUrl()

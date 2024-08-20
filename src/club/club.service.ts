@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,9 +12,10 @@ import { SportService } from 'src/sport/sport.service';
 
 @Injectable()
 export class ClubService {
-  constructor(private readonly prismaService: PrismaService,
+  constructor(
+    private readonly prismaService: PrismaService,
     private readonly leagueService: LeagueService,
-    private readonly sportService: SportService
+    private readonly sportService: SportService,
   ) {}
 
   async create(createClubDto: CreateClubDto) {
@@ -22,7 +28,7 @@ export class ClubService {
         logo,
         website,
         leagues,
-        sports
+        sports,
       } = createClubDto;
       const foundingDate = new Date(date);
 
@@ -30,7 +36,7 @@ export class ClubService {
         throw new HttpException(
           'A data deve estar no formato AAAA-MM-DD',
           HttpStatus.BAD_REQUEST,
-        ); 
+        );
       }
 
       const club = await this.prismaService.club.create({
@@ -42,13 +48,13 @@ export class ClubService {
           logo,
           website,
           sports: {
-            connect: sports.map(id => ({ id }))
+            connect: sports.map((id) => ({ id })),
           },
           leagues: {
-            connect: leagues.map(id => ({ id }))
-          }
-        }
-      })
+            connect: leagues.map((id) => ({ id })),
+          },
+        },
+      });
 
       return club;
     } catch (error) {

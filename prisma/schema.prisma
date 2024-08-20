@@ -15,6 +15,8 @@ model User {
   name        String
   email       String   @unique
   password    String
+  otp         String?
+  otpExpiry   DateTime?
   sports      Sport[] @relation("UserSport")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

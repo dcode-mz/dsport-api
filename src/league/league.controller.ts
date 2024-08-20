@@ -12,7 +12,11 @@ import {
 import { LeagueService } from './league.service';
 import { CreateLeagueDto } from './dto/create-league.dto';
 import { UpdateLeagueDto } from './dto/update-league.dto';
-import { ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('league')
 @Controller('league')
@@ -33,9 +37,11 @@ export class LeagueController {
     return this.leagueService.findAll();
   }
 
-  
   @Get('leagues')
-  findLeaguesWithPlayers(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
+  findLeaguesWithPlayers(
+    @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
+    ids: string[],
+  ) {
     return this.leagueService.findLeaguesWithClubs(ids);
   }
 

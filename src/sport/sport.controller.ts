@@ -47,10 +47,10 @@ export class SportController {
     return this.sportService.findSportsWithLeaguesAndClubs();
   }
 
-// @Get('leagues')
-// findSportsWithLeagues(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
-//   return this.sportService.findSportsWithLeagues(ids);
-// }
+  // @Get('leagues')
+  // findSportsWithLeagues(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
+  //   return this.sportService.findSportsWithLeagues(ids);
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

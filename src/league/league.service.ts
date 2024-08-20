@@ -47,35 +47,31 @@ export class LeagueService {
   }
 
   async findAllFromSportId(id: string) {
-    const allLeagues = await this.prismaService.league.findMany(
-      {
-        where: {
-          sportId: id
-        },
-        select: {
-          id: true,
-          name: true,
-          logo: true,
-          organizer: true
-        }
-      }
-    );
+    const allLeagues = await this.prismaService.league.findMany({
+      where: {
+        sportId: id,
+      },
+      select: {
+        id: true,
+        name: true,
+        logo: true,
+        organizer: true,
+      },
+    });
     return allLeagues;
   }
 
   async findLeaguesWithClubs(leagueIds: string[]) {
-    const leagues = await this.prismaService.league.findMany(
-      {
-        where: {
-          id: {
-            in: leagueIds,
-          }
+    const leagues = await this.prismaService.league.findMany({
+      where: {
+        id: {
+          in: leagueIds,
         },
-        include: {
-          clubs: true,
-        }
-      }
-    );
+      },
+      include: {
+        clubs: true,
+      },
+    });
     return leagues;
   }
 }
