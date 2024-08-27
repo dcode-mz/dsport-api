@@ -26,18 +26,18 @@ export class CreateSportDto {
   description?: string;
 
   @ApiProperty({
-    description: 'Array of leagues related to the sport',
-    example: ['Premier League', 'Moçambola'],
+    description: 'Array of tournaments related to the sport',
+    example: ['Premier Tournament', 'Moçambola'],
     required: false,
     type: [String],
   })
   @IsOptional()
   @IsArray()
-  leagues?: string[];
+  tournaments?: string[];
 
   @ApiProperty({
     description: 'Array of cups related to the sport',
-    example: ['Taça de Moçambique', 'UEFA Champions League'],
+    example: ['Taça de Moçambique', 'UEFA Champions Tournament'],
     required: false,
     type: [String],
   })

@@ -36,17 +36,18 @@ export class AuthService {
     const otp = speakeasy.totp({ secret, digits: 4, step: 60 });
     const otpExpiry = addSeconds(new Date(), 60);
 
-    await this.usersService.updateOtp(email, otp, otpExpiry);
-    await this.sendResetEmail(email, otp);
+    await this.usersService.createUserOtp(user.id, otp, otpExpiry);
+    await this.sendResetEmail(user.email, otp);
 
     return { message: 'OTP enviado para e-mail' };
   }
 
   async verifyOtp(email: string, otp: string): Promise<{ message: string }> {
-    const user = await this.usersService.findOne(email);
-    if (!user) throw new NotFoundException('Usuário não encontrado');
+    const userOtp = await this.usersService.findOneByUserOtp(email);
+    // const user = await this.usersService.findOne(email);
+    if (!userOtp) throw new NotFoundException('Usuário não encontrado');
 
-    if (user.otp !== otp || new Date() > user.otpExpiry) {
+    if (userOtp.userOtp.otp !== otp || new Date() > userOtp.userOtp.otpExpiry) {
       throw new UnauthorizedException('OTP inválido ou expirado');
     }
 
@@ -54,7 +55,6 @@ export class AuthService {
   }
 
   async sendResetEmail(email: string, otp: string) {
-    console.log(email, otp);
     const mailOptions = {
       from: 'adolforicardo5@gmail.com',
       to: email,
@@ -70,7 +70,7 @@ export class AuthService {
     if (!user) return null;
     const passwordChecked = await bcrypt.compare(pass, user.password);
     if (!passwordChecked) return null;
-    const { password, otp, otpExpiry, ...result } = user;
+    const { password, ...result } = user;
     return result;
   }
 

@@ -11,134 +11,135 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  name        String
-  email       String   @unique
-  password    String
-  otp         String?
-  otpExpiry   DateTime?
-  sports      Sport[] @relation("UserSport")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String       @id @default(uuid())
+  name       String
+  email      String       @unique
+  password   String
+  sports     Sport[]
+  tournament Tournament[]
+  clubs      Club[]
+  userOtp    UserOtp?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   @@map("users")
 }
 
+model UserOtp {
+  id        String   @id @default(uuid())
+  otp       String
+  otpExpiry DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+
+  @@map("user_otp")
+}
+
 model Sport {
-  id          String   @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
   icon        String
   description String?
-  users       User[] @relation("UserSport")
-  leagues     League[]
-  cups        Cup[]
-  clubs       Club[]   @relation("SportClub")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  tournaments Tournament[]
+  clubs       Club[]
+  users       User[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("sport")
 }
 
-model League {
-  id          String   @id @default(uuid())
+model Tournament {
+  id          String     @id @default(uuid())
   name        String
   description String?
   logo        String?
-  country     String   @default("Mozambique")
+  country     String     @default("Mozambique")
   organizer   String
-  Sport       Sport    @relation(fields: [sportId], references: [id])
+  Sport       Sport      @relation(fields: [sportId], references: [id])
   sportId     String
-  clubs       Club[]   @relation("LeagueClubs")
-  games       Game[]
-  Season      Season   @relation(fields: [seasonId], references: [id])
+  Season      Season     @relation(fields: [seasonId], references: [id])
   seasonId    String
-  seasons     Season[] @relation("SeasonLeagues")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("league")
-}
-
-model Cup {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  logo        String?
-  country     String   @default("Mozambique")
-  organizer   String
-  sport       Sport    @relation(fields: [sportId], references: [id])
-  sportId     String
-  clubs       Club[]   @relation("CupClub")
+  clubs       Club[]
+  matchdays   Matchday[]
   games       Game[]
-  Season      Season   @relation(fields: [seasonId], references: [id])
-  seasonId    String
-  seasons     Season[] @relation("SeasonCups")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  users       User[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  @@map("cup")
+  @@map("tournament")
 }
 
 model Season {
-  id        String   @id @default(uuid())
-  year      Int
-  startDate DateTime
-  endDate   DateTime
-  leagues   League[] @relation("SeasonLeagues")
-  cups      Cup[]    @relation("SeasonCups")
-  League    League[]
-  Cup       Cup[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String       @id @default(uuid())
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  tournaments Tournament[]
+  matchdays   Matchday[]
+  games       Game[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("season")
 }
 
 model Club {
-  id            String    @id @default(uuid())
+  id            String       @id @default(uuid())
   name          String
   shortName     String?
   description   String?
   logo          String?
   foundingDate  DateTime
   website       String?
-  leagues       League[]  @relation("LeagueClubs")
-  cups          Cup[]     @relation("CupClub")
-  games         Game[]
+  sports        Sport[]
+  tournaments   Tournament[]
   athlete       Athlete[]
   news          News[]
-  sports        Sport[]   @relation("SportClub")
-  homeTeamGames Game[]    @relation("HomeTeam")
-  awayTeamGames Game[]    @relation("AwayTeam")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  homeTeamGames Game[]       @relation("HomeTeam")
+  awayTeamGames Game[]       @relation("AwayTeam")
+  users         User[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@map("club")
 }
 
 model Game {
-  id             String   @id @default(uuid())
+  id             String      @id @default(uuid())
   dateTime       DateTime
   stadium        String
   location       String
   referee        String
   attendance     Float
+  homeTeam       Club        @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  homeTeamId     String
+  awayTeam       Club        @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  awayTeamId     String
   resultHomeTeam Int?
   resultAwayTeam Int?
-  homeTeam       Club     @relation("HomeTeam", fields: [homeTeamId], references: [id])
-  homeTeamId     String
-  awayTeam       Club     @relation("AwayTeam", fields: [awayTeamId], references: [id])
-  awayTeamId     String
-  League         League?  @relation(fields: [leagueId], references: [id])
-  Cup            Cup?     @relation(fields: [cupId], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  Club           Club?    @relation(fields: [clubId], references: [id])
-  clubId         String?
-  leagueId       String?
-  cupId          String?
+  tournament     Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId   String?
+  matchday       Matchday    @relation(fields: [matchdayId], references: [id])
+  matchdayId     String
+  season         Season      @relation(fields: [seasonId], references: [id])
+  seasonId       String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   @@map("game")
+}
+
+model Matchday {
+  id           String     @id @default(uuid())
+  number       Int
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String
+  season       Season     @relation(fields: [seasonId], references: [id])
+  seasonId     String
+  games        Game[]
+
+  @@map("matchday")
 }
 
 model Athlete {

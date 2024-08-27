@@ -28,9 +28,10 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('sports')
-    .addTag('league')
+    .addTag('tournament')
     .addTag('season')
     .addTag('club')
+    .addTag('game')
     .addTag('auth')
     .build();
   const document = SwaggerModule.createDocument(app, config);

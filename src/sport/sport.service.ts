@@ -49,19 +49,19 @@ export class SportService {
     return user;
   }
 
-  async findSportsWithLeagues() {
+  async findSportsWithTournaments() {
     const sports = await this.prismaService.sport.findMany({
       include: {
-        leagues: true,
+        tournaments: true,
       },
     });
     return sports;
   }
 
-  async findSportsWithLeaguesAndClubs() {
+  async findSportsWithTournamentsAndClubs() {
     const sports = await this.prismaService.sport.findMany({
       include: {
-        leagues: {
+        tournaments: {
           include: {
             clubs: {
               select: {
@@ -79,12 +79,12 @@ export class SportService {
       id: sport.id,
       name: sport.name,
       icon: sport.icon,
-      clubs: sport.leagues.flatMap((league) => league.clubs),
+      clubs: sport.tournaments.flatMap((tournament) => tournament.clubs),
     }));
   }
 }
 
-// async findSportsWithLeagues(sportIds: string[]) {
+// async findSportsWithTournaments(sportIds: string[]) {
 //   const sports = await this.prismaService.sport.findMany(
 //     {
 //       where: {
@@ -93,7 +93,7 @@ export class SportService {
 //         }
 //       },
 //       include: {
-//         leagues: true,
+//         tournaments: true,
 //       }
 //     }
 //   );

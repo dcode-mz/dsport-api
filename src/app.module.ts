@@ -6,8 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ClubModule } from './club/club.module';
-import { LeagueModule } from './league/league.module';
-import { CupModule } from './cup/cup.module';
+import { TournamentModule } from './tournament/tournament.module';
 import { SeasonModule } from './season/season.module';
 import { AthleteModule } from './athlete/athlete.module';
 import { NewsModule } from './news/news.module';
@@ -15,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './common/filters/GlobalExceptionFilter';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -22,13 +22,13 @@ import { GlobalExceptionFilter } from './common/filters/GlobalExceptionFilter';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     ClubModule,
-    LeagueModule,
-    CupModule,
+    TournamentModule,
     SeasonModule,
     AthleteModule,
     NewsModule,
     AuthModule,
     UsersModule,
+    GameModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsDateString } from 'class-validator';
+import { IsDateString, IsString } from 'class-validator';
 
 export class CreateSeasonDto {
   @ApiProperty({
     description: 'Year of the Season',
     example: '2024',
   })
-  @IsInt()
-  year: number;
+  @IsString()
+  name: string;
 
   @ApiProperty({
     description: 'Start Date of the Season',

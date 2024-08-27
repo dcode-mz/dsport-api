@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional } from 'class-validator';
 
-export class CreateLeagueDto {
+export class CreateTournamentDto {
   @ApiProperty({
-    description: 'Name of the league',
+    description: 'Name of the tournament',
     example: 'Moçambola',
   })
   @IsString()
   name: string;
 
   @ApiProperty({
-    description: 'Description of the league',
-    example: 'A popular league sport played with a round ball.',
+    description: 'Description of the tournament',
+    example: 'A popular tournament sport played with a round ball.',
     required: false,
   })
   @IsOptional()
@@ -19,7 +19,7 @@ export class CreateLeagueDto {
   description?: string;
 
   @ApiProperty({
-    description: 'Icon of the league',
+    description: 'Icon of the tournament',
     example: 'mocambola.png',
   })
   @IsOptional()

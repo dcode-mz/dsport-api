@@ -58,7 +58,6 @@ export class AuthController {
   @Post('login')
   async login(@Request() req, @Res() res: Response) {
     const user = req.user as UserDto;
-    console.log('saas' + user);
     const { access_token } = await this.authService.login(user);
     const response = new ResponseBody<LoginResponse>(
       'Logado com sucesso',

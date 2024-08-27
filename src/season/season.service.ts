@@ -8,7 +8,7 @@ export class SeasonService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createSeasonDto: CreateSeasonDto) {
-    const { year, startDate, endDate } = createSeasonDto;
+    const { name, startDate, endDate } = createSeasonDto;
     const startDateObject = new Date(startDate);
     const endDateObject = new Date(endDate);
     if (isNaN(startDateObject.getTime()) && isNaN(endDateObject.getTime())) {
@@ -20,7 +20,7 @@ export class SeasonService {
 
     const season = await this.prismaService.season.create({
       data: {
-        year,
+        name,
         startDate: startDateObject,
         endDate: endDateObject,
       },
@@ -39,11 +39,11 @@ export class SeasonService {
   }
 
   async update(id: string, updateSeasonDto: UpdateSeasonDto) {
-    const { year, startDate, endDate } = updateSeasonDto;
+    const { name, startDate, endDate } = updateSeasonDto;
     const user = await this.prismaService.season.update({
       where: { id },
       data: {
-        year,
+        name,
         startDate,
         endDate,
       },

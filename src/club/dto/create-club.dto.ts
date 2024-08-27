@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsDateString,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
+import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreateClubDto {
   @ApiProperty({
@@ -52,7 +46,7 @@ export class CreateClubDto {
     required: false,
   })
   @IsOptional()
-  @IsUrl()
+  @IsString()
   website?: string;
 
   @ApiProperty({
@@ -66,12 +60,12 @@ export class CreateClubDto {
   sports?: string[];
 
   @ApiProperty({
-    description: 'Array of leagues related to the club',
+    description: 'Array of tournaments related to the club',
     example: ['Moçambola', 'Supertaça Mario Esteves Coluna'],
     required: false,
     type: [String],
   })
   @IsOptional()
   @IsArray()
-  leagues?: string[];
+  tournaments?: string[];
 }

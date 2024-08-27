@@ -4,12 +4,12 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
-import { UserDto } from './dtos/user.dto';
+import { UserUserOtpDto } from './dtos/user-user-otp.dto';
+import { UserDto } from 'src/auth/dto';
 
 interface AddSportUserDto {
   userId: string;
@@ -26,6 +26,18 @@ export class UsersService {
         email,
       },
     });
+  }
+
+  async findOneByUserOtp(email: string): Promise<UserUserOtpDto> {
+    const userWithOtpByEmail = await this.prismaService.user.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        userOtp: true,
+      },
+    });
+    return userWithOtpByEmail;
   }
 
   async create(createUserDto: CreateUserDto): Promise<UserDto> {
@@ -45,11 +57,18 @@ export class UsersService {
     }
   }
 
-  async updateOtp(email: string, otp: string, otpExpiry: Date): Promise<any> {
+  async createUserOtp(id: string, otp: string, otpExpiry: Date): Promise<any> {
     try {
-      await this.prismaService.user.update({
-        where: { email },
-        data: { otp, otpExpiry },
+      await this.prismaService.userOtp.create({
+        data: {
+          otp,
+          otpExpiry,
+          user: {
+            connect: {
+              id,
+            },
+          },
+        },
       });
     } catch (error) {
       // this.logger.log("Já existe usuário com este endereço de email: " + error);
@@ -65,10 +84,24 @@ export class UsersService {
         where: { email },
         data: {
           password: hashedPassword,
-          otp: null, // Limpa o OTP após a redefinição
-          otpExpiry: null,
         },
       });
+
+      const userOtp = await this.prismaService.userOtp.findFirst({
+        where: {
+          user: {
+            email,
+          },
+        },
+      });
+
+      if (userOtp) {
+        await this.prismaService.userOtp.delete({
+          where: {
+            id: userOtp.id,
+          },
+        });
+      }
       return { message: 'Password reset successful' };
     } catch (error) {
       // this.logger.log("Já existe usuário com este endereço de email: " + error);

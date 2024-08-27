@@ -6,8 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
-  ParseArrayPipe,
 } from '@nestjs/common';
 import { SportService } from './sport.service';
 import { CreateSportDto } from './dto/create-sport.dto';
@@ -37,19 +35,19 @@ export class SportController {
     return this.sportService.findAll();
   }
 
-  @Get('leagues')
-  findSportsWithLeagues() {
-    return this.sportService.findSportsWithLeagues();
+  @Get('tournaments')
+  findSportsWithTournaments() {
+    return this.sportService.findSportsWithTournaments();
   }
 
   @Get('clubs')
-  findSportsWithLeaguesAndClubs() {
-    return this.sportService.findSportsWithLeaguesAndClubs();
+  findSportsWithTournamentsAndClubs() {
+    return this.sportService.findSportsWithTournamentsAndClubs();
   }
 
-  // @Get('leagues')
-  // findSportsWithLeagues(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
-  //   return this.sportService.findSportsWithLeagues(ids);
+  // @Get('tournaments')
+  // findSportsWithTournaments(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
+  //   return this.sportService.findSportsWithTournaments(ids);
   // }
 
   @Get(':id')
