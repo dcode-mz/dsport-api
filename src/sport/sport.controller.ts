@@ -45,6 +45,11 @@ export class SportController {
     return this.sportService.findSportsWithTournamentsAndClubs();
   }
 
+  @Get(':id/matches')
+  getMatchesBySport(@Param('id') id: string) {
+    return this.sportService.getMatchesBySport(id);
+  }
+
   // @Get('tournaments')
   // findSportsWithTournaments(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
   //   return this.sportService.findSportsWithTournaments(ids);

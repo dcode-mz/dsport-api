@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateSportDto } from './dto/create-sport.dto';
 import { UpdateSportDto } from './dto/update-sport.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { format } from 'date-fns';
 
 @Injectable()
 export class SportService {
@@ -81,6 +82,88 @@ export class SportService {
       icon: sport.icon,
       clubs: sport.tournaments.flatMap((tournament) => tournament.clubs),
     }));
+  }
+
+  async getMatchesBySport(idSport: string) {
+    const sport = await this.prismaService.sport.findUnique({
+      where: { id: idSport },
+      include: {
+        tournaments: {
+          include: {
+            stage: {
+              include: {
+                matchdays: {
+                  include: {
+                    matches: {
+                      include: {
+                        homeTeam: true,
+                        awayTeam: true,
+                      },
+                      orderBy: {
+                        dateTime: 'asc',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Agrupamento dos jogos por data e torneio
+    const groupedData = sport.tournaments
+      .flatMap((tournament) =>
+        tournament.stage.flatMap((stage) =>
+          stage.matchdays.flatMap((matchday) =>
+            matchday.matches.map((match) => ({
+              date: format(new Date(match.dateTime), 'dd-MM-yyyy'),
+              tournament: tournament.name,
+              logo: tournament.logo,
+              match: {
+                homeTeam: match.homeTeam,
+                awayTeam: match.awayTeam,
+                time: format(new Date(match.dateTime), 'HH:mm'),
+              },
+            })),
+          ),
+        ),
+      )
+      .reduce((acc, curr) => {
+        const existingDate = acc.find((item) => item.date === curr.date);
+
+        if (existingDate) {
+          const existingTournament = existingDate.tournaments.find(
+            (t) => t.name === curr.tournament,
+          );
+
+          if (existingTournament) {
+            existingTournament.matches.push(curr.match);
+          } else {
+            existingDate.tournaments.push({
+              name: curr.tournament,
+              logo: curr.logo,
+              matches: [curr.match],
+            });
+          }
+        } else {
+          acc.push({
+            date: curr.date,
+            tournaments: [
+              {
+                name: curr.tournament,
+                logo: curr.logo,
+                matches: [curr.match],
+              },
+            ],
+          });
+        }
+
+        return acc;
+      }, []);
+
+    return groupedData;
   }
 }
 

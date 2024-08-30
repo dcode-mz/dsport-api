@@ -1,7 +1,7 @@
 import { IsString, IsDate, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateGameDto {
+export class CreateMatchDto {
   @ApiProperty({
     description: 'Date and time of the game',
     example: '2024-08-27T14:30:00.000Z',

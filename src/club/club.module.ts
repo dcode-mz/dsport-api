@@ -8,5 +8,6 @@ import { SportModule } from 'src/sport/sport.module';
   controllers: [ClubController],
   providers: [ClubService],
   imports: [TournamentModule, SportModule],
+  exports: [ClubService],
 })
 export class ClubModule {}

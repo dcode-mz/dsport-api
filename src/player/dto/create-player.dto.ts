@@ -7,7 +7,7 @@ import {
   IsDateString,
 } from 'class-validator';
 
-export class CreateAthleteDto {
+export class CreatePlayerDto {
   @IsString()
   name: string;
 

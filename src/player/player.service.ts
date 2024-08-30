@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateAthleteDto } from './dto/create-athlete.dto';
-import { UpdateAthleteDto } from './dto/update-athlete.dto';
+import { CreatePlayerDto } from './dto/create-player.dto';
+import { UpdatePlayerDto } from './dto/update-player.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
-export class AthleteService {
+export class PlayerService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createAthleteDto: CreateAthleteDto) {
+  async create(createPlayerDto: CreatePlayerDto) {
     const {
       name,
       position,
@@ -17,7 +17,7 @@ export class AthleteService {
       weight,
       photoUrl,
       clubId,
-    } = createAthleteDto;
+    } = createPlayerDto;
     const dateOfBirthValidated = new Date(dateOfBirth);
     if (isNaN(dateOfBirthValidated.getTime())) {
       throw new HttpException(
@@ -26,7 +26,7 @@ export class AthleteService {
       );
     }
 
-    const athlete = await this.prismaService.athlete.create({
+    const player = await this.prismaService.player.create({
       data: {
         name,
         position,
@@ -38,22 +38,22 @@ export class AthleteService {
         clubId,
       },
     });
-    return athlete;
+    return player;
   }
 
   async findAll() {
-    const athlete = await this.prismaService.athlete.findMany();
-    return athlete;
+    const player = await this.prismaService.player.findMany();
+    return player;
   }
 
   async findOne(id: string) {
-    const athlete = await this.prismaService.athlete.findUnique({
+    const player = await this.prismaService.player.findUnique({
       where: { id },
     });
-    return athlete;
+    return player;
   }
 
-  async update(id: string, updateAthleteDto: UpdateAthleteDto) {
+  async update(id: string, updatePlayerDto: UpdatePlayerDto) {
     const {
       name,
       position,
@@ -63,9 +63,9 @@ export class AthleteService {
       weight,
       photoUrl,
       clubId,
-    } = updateAthleteDto;
+    } = updatePlayerDto;
 
-    const athlete = await this.prismaService.athlete.update({
+    const player = await this.prismaService.player.update({
       where: { id },
       data: {
         name,
@@ -78,13 +78,13 @@ export class AthleteService {
         clubId,
       },
     });
-    return athlete;
+    return player;
   }
 
   async remove(id: string) {
-    const athlete = await this.prismaService.athlete.delete({
+    const player = await this.prismaService.player.delete({
       where: { id },
     });
-    return athlete;
+    return player;
   }
 }

@@ -8,13 +8,15 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ClubModule } from './club/club.module';
 import { TournamentModule } from './tournament/tournament.module';
 import { SeasonModule } from './season/season.module';
-import { AthleteModule } from './athlete/athlete.module';
+import { PlayerModule } from './player/player.module';
 import { NewsModule } from './news/news.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './common/filters/GlobalExceptionFilter';
-import { GameModule } from './game/game.module';
+import { MatchModule } from './match/match.module';
+import { MatchdayModule } from './matchday/matchday.module';
+import { StageModule } from './stage/stage.module';
 
 @Module({
   imports: [
@@ -24,11 +26,13 @@ import { GameModule } from './game/game.module';
     ClubModule,
     TournamentModule,
     SeasonModule,
-    AthleteModule,
+    PlayerModule,
     NewsModule,
     AuthModule,
     UsersModule,
-    GameModule,
+    MatchModule,
+    MatchdayModule,
+    StageModule,
   ],
   controllers: [AppController],
   providers: [

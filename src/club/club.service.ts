@@ -67,6 +67,19 @@ export class ClubService {
     return club;
   }
 
+  async findBySport(idSport: string) {
+    const clubs = this.prismaService.club.findMany({
+      where: {
+        sports: {
+          some: {
+            id: idSport,
+          },
+        },
+      },
+    });
+    return clubs;
+  }
+
   async update(id: string, updateClubDto: UpdateClubDto) {
     const {
       name,

@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { GlobalExceptionFilter } from 'src/common/filters/GlobalExceptionFilter';
 
@@ -31,7 +31,8 @@ async function bootstrap() {
     .addTag('tournament')
     .addTag('season')
     .addTag('club')
-    .addTag('game')
+    .addTag('match')
+    .addTag('matchday')
     .addTag('auth')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -39,6 +40,7 @@ async function bootstrap() {
 
   // Aplicando o filtro global de exceções
   app.useGlobalFilters(new GlobalExceptionFilter());
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   await app.listen(4000);
 }

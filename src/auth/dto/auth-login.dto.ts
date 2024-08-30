@@ -1,3 +1,4 @@
+// import { Exclude } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class AuthLoginDto {
@@ -5,6 +6,7 @@ export class AuthLoginDto {
   @IsString()
   email: string;
 
+  // @Exclude()
   @IsNotEmpty()
   @IsString()
   password: string;
