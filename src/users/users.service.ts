@@ -10,6 +10,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserUserOtpDto } from './dtos/user-user-otp.dto';
 import { UserDto } from 'src/auth/dto';
+import { UserResponse } from 'src/auth/dto/user.response';
 
 interface AddSportUserDto {
   userId: string;
@@ -40,7 +41,7 @@ export class UsersService {
     return userWithOtpByEmail;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<UserDto> {
+  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
     const passEncrypted = await bcrypt.hash(createUserDto.password, 12);
     createUserDto.password = passEncrypted;
     try {

@@ -6,6 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
 import { SportService } from './sport.service';
 import { CreateSportDto } from './dto/create-sport.dto';
@@ -15,6 +18,7 @@ import {
   ApiForbiddenResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @ApiTags('sports')
 @Controller('sports')
@@ -40,15 +44,37 @@ export class SportController {
     return this.sportService.findSportsWithTournaments();
   }
 
-  @Get('clubs')
-  findSportsWithTournamentsAndClubs() {
-    return this.sportService.findSportsWithTournamentsAndClubs();
-  }
+  // @Get('clubs')
+  // findSportsWithTournamentsAndClubs() {
+  //   return this.sportService.findSportsWithTournamentsAndClubs();
+  // }
 
   @Get(':id/matches')
-  getMatchesBySport(@Param('id') id: string) {
-    return this.sportService.getMatchesBySport(id);
+  async getMatchesBySport(
+    @Param('id') id: string,
+    @Query('date') matchDate: string,
+    @Res() res: Response,
+  ) {
+    const response = await this.sportService.getMatchesBySportAndDate(
+      id,
+      matchDate,
+    );
+
+    res.status(HttpStatus.OK).json(response);
   }
+
+  // @UseGuards(LocalAuthGuard)
+  // @Post('login')
+  // async login(@Request() req, @Res() res: Response) {
+  //   const user = req.user as UserDto;
+  //   const { access_token } = await this.authService.login(user);
+  //   const response = new ResponseBody<LoginResponse>(
+  //     'Logado com sucesso',
+  //     { user, access_token },
+  //     true,
+  //   );
+  //   res.status(HttpStatus.OK).json(response);
+  // }
 
   // @Get('tournaments')
   // findSportsWithTournaments(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {

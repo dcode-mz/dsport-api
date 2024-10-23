@@ -31,7 +31,13 @@ async function bootstrap() {
     .addTag('tournament')
     .addTag('season')
     .addTag('club')
+    .addTag('team')
+    .addTag('player')
+    .addTag('venue')
+    .addTag('referee')
+    .addTag('coach')
     .addTag('match')
+    .addTag('match-events')
     .addTag('matchday')
     .addTag('auth')
     .build();

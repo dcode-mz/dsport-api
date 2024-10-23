@@ -2,18 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { ClubService } from 'src/club/club.service';
-import { ClubDto } from './dto/club.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GenerateFixturesDto } from './dto/generate-fixtures.dto';
+import { TeamService } from 'src/team/team.service';
+import { TeamDto } from './dto/team.dto';
 
 class FixturesDto {
   round: number;
-  matches: { homeClub: ClubDto; awayClub: ClubDto }[];
+  matches: { homeTeam: TeamDto; awayTeam: TeamDto }[];
 }
 
 @Injectable()
 export class MatchService {
   constructor(
     private readonly clubService: ClubService,
+    private readonly teamService: TeamService,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -22,7 +25,7 @@ export class MatchService {
   }
 
   findAll() {
-    return `This action returns all match`;
+    return this.prismaService.match.findMany();
   }
 
   findOne(id: number) {
@@ -38,7 +41,7 @@ export class MatchService {
   }
 
   //
-  private getRandomOrder(array: ClubDto[]): ClubDto[] {
+  private getRandomOrder(array: TeamDto[]): TeamDto[] {
     const shuffled = array.slice();
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -48,49 +51,106 @@ export class MatchService {
   }
 
   private generateRoundMatches(
-    order: ClubDto[],
-  ): { homeClub: ClubDto; awayClub: ClubDto }[] {
+    order: TeamDto[],
+  ): { homeTeam: TeamDto; awayTeam: TeamDto }[] {
     const roundMatches = [];
-    const numClubs = order.length;
-    for (let i = 0; i < numClubs / 2; i++) {
-      const homeClub = order[i];
-      const awayClub = order[numClubs - 1 - i];
-      if (homeClub !== awayClub) {
-        roundMatches.push({ homeClub, awayClub });
+    const numTeams = order.length;
+    for (let i = 0; i < numTeams / 2; i++) {
+      const homeTeam = order[i];
+      const awayTeam = order[numTeams - 1 - i];
+      if (homeTeam !== awayTeam) {
+        roundMatches.push({ homeTeam, awayTeam });
       }
     }
     return roundMatches;
   }
 
   private uniqueMatches(
-    matches: { homeClub: ClubDto; awayClub: ClubDto }[],
+    matches: { homeTeam: TeamDto; awayTeam: TeamDto }[],
   ): boolean {
     const matchSet = new Set(
-      matches.map((m) => [m.homeClub.name, m.awayClub.name].sort().join('-')),
+      matches.map((m) =>
+        [(m.homeTeam.club.name, m.awayTeam.club.name)].sort().join('-'),
+      ),
     );
     return matchSet.size === matches.length;
   }
 
-  private async generateFixtures(idSport: string): Promise<FixturesDto[]> {
-    const clubs = await this.clubService.findBySport(idSport);
-    const numClubs = clubs.length;
-    const fixtures: FixturesDto[] = [];
-    // const allMatches: { homeClub: string; awayClub: string }[] = [];
+  private async generateFixtures(teamIds: string[]): Promise<FixturesDto[]> {
+    const teams: TeamDto[] = await this.prismaService.team.findMany({
+      where: { id: { in: teamIds } },
+      include: {
+        club: {
+          select: {
+            id: true,
+            name: true,
+            shortName: true,
+            description: true,
+            logo: true,
+            foundingDate: true,
+            website: true,
+          },
+        },
+        teamType: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        venue: {
+          select: {
+            id: true,
+            name: true,
+            location: true,
+            capacity: true,
+          },
+        },
+        sport: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+            description: true,
+          },
+        },
+        ageCategory: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        format: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        gender: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
 
-    for (let round = 0; round < numClubs - 1; round++) {
+    const numTeams = teams.length;
+    const fixtures: FixturesDto[] = [];
+
+    for (let round = 0; round < numTeams - 1; round++) {
       let roundMatches;
       do {
-        const randomOrder = this.getRandomOrder(clubs);
+        const randomOrder = this.getRandomOrder(teams);
         roundMatches = this.generateRoundMatches(randomOrder);
       } while (!this.uniqueMatches(roundMatches));
       fixtures.push({ round: round + 1, matches: roundMatches });
     }
 
     const secondHalfFixtures = fixtures.map(({ round, matches }) => ({
-      round: round + numClubs - 1,
-      matches: matches.map(({ homeClub, awayClub }) => ({
-        homeClub: awayClub,
-        awayClub: homeClub,
+      round: round + numTeams - 1,
+      matches: matches.map(({ homeTeam, awayTeam }) => ({
+        homeTeam: awayTeam,
+        awayTeam: homeTeam,
       })),
     }));
 
@@ -99,27 +159,23 @@ export class MatchService {
     return fixtures;
   }
 
-  async generateMatchday(
-    idSport: string,
-    idSeason: string,
-    tournamentId: string,
-  ) {
-    const fixtures: FixturesDto[] = await this.generateFixtures(idSport);
+  async generateMatchday(generateFixturesDto: GenerateFixturesDto) {
+    const fixtures: FixturesDto[] = await this.generateFixtures(
+      generateFixturesDto.teams,
+    );
 
-    const startDate = new Date(new Date().getFullYear(), 0, 1); // Início do ano
-    const endDate = new Date(new Date().getFullYear(), 11, 31); // Final do ano
+    const startDate = new Date(new Date().getFullYear(), 0, 1);
+    const endDate = new Date(new Date().getFullYear(), 11, 31);
     const roundDuration = Math.floor(
       (endDate.getTime() - startDate.getTime()) / fixtures.length,
-    ); // Dividir o tempo ao longo das rodadas
+    );
 
-    //
-    // Verifique se o estágio já existe
     const existingStage = await this.prismaService.stage.findFirst({
       where: {
         tournament: {
-          id: tournamentId,
+          id: generateFixturesDto.tournamentId,
           season: {
-            id: idSeason,
+            id: generateFixturesDto.seasonId,
           },
         }, // Assumindo que você pode identificar um estágio com base no torneio
         name: 'Regular Season',
@@ -134,12 +190,12 @@ export class MatchService {
           data: {
             name: 'Regular Season',
             order: 1,
-            type: 'League',
+            type: { connect: { id: 'f25ebcb4-0912-486f-adc4-85ab9c915bc7' } },
             hasMatchdays: true,
             homeAndAway: false,
             tournament: {
               connect: {
-                id: tournamentId,
+                id: generateFixturesDto.tournamentId,
               },
             },
           },
@@ -155,16 +211,22 @@ export class MatchService {
             dateTime: new Date(
               startDate.getTime() + fixture.round * roundDuration,
             ),
-            stadium: match.awayClub.stadium,
-            location: match.homeClub.location,
-            referee: 'João Silva',
-            attendance: 25000,
+            venue: { connect: { id: match.homeTeam.venue.id } },
+            location: match.homeTeam.location,
+            referee: {
+              connect: { id: 'c24dfb44-e28b-4fb0-a2d2-c2f9cae5072b' },
+            },
+            teamType: { connect: { id: match.homeTeam.teamType.id } },
+            attendance: 1000,
             homeTeam: {
-              connect: { id: match.homeClub.id },
+              connect: { id: match.homeTeam.id },
             },
             awayTeam: {
-              connect: { id: match.awayClub.id },
+              connect: { id: match.awayTeam.id },
             },
+            status: { connect: { id: 'e9f1c6cf-73b6-47d0-96b9-180f9227eaac' } },
+            numberPeriods: 2,
+            durationPerPeriod: 45,
             matchday: {
               create: {
                 number: fixture.round,

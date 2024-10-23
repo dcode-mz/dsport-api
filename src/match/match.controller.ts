@@ -15,6 +15,7 @@ import {
   ApiForbiddenResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { GenerateFixturesDto } from './dto/generate-fixtures.dto';
 
 @ApiTags('match')
 @Controller('match')
@@ -50,14 +51,8 @@ export class MatchController {
     return this.matchService.remove(+id);
   }
 
-  //
-
-  @Get('generate/fixtures/:sport/:season/:tournament')
-  getFixtures(
-    @Param('sport') idSport: string,
-    @Param('season') idSeason: string,
-    @Param('tournament') idTournament: string,
-  ) {
-    return this.matchService.generateMatchday(idSport, idSeason, idTournament);
+  @Post('generate/fixtures')
+  getFixtures(@Body() generateFixturesDto: GenerateFixturesDto) {
+    return this.matchService.generateMatchday(generateFixturesDto);
   }
 }

@@ -10,7 +10,9 @@ import {
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('player')
 @Controller('player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
@@ -18,6 +20,11 @@ export class PlayerController {
   @Post()
   create(@Body() createPlayerDto: CreatePlayerDto) {
     return this.playerService.create(createPlayerDto);
+  }
+
+  @Post('create/all')
+  async createPlayers(@Body() createPlayersDto: CreatePlayerDto[]) {
+    return this.playerService.createPlayers(createPlayersDto);
   }
 
   @Get()

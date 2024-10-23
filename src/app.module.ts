@@ -17,6 +17,11 @@ import { GlobalExceptionFilter } from './common/filters/GlobalExceptionFilter';
 import { MatchModule } from './match/match.module';
 import { MatchdayModule } from './matchday/matchday.module';
 import { StageModule } from './stage/stage.module';
+import { TeamModule } from './team/team.module';
+import { VenueModule } from './venue/venue.module';
+import { CoachModule } from './coach/coach.module';
+import { RefereeModule } from './referee/referee.module';
+import { MatchEventsModule } from './match-events/match-events.module';
 
 @Module({
   imports: [
@@ -33,6 +38,11 @@ import { StageModule } from './stage/stage.module';
     MatchModule,
     MatchdayModule,
     StageModule,
+    TeamModule,
+    VenueModule,
+    CoachModule,
+    RefereeModule,
+    MatchEventsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,32 +1,33 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsString, IsUUID, IsOptional, IsDate } from 'class-validator';
 
 export class CreateClubDto {
   @ApiProperty({
-    description: 'Name of the club',
-    example: 'Black Bulls',
+    description: 'Nome do clube',
+    example: 'Clube Ferroviário de Maputo',
   })
   @IsString()
   name: string;
 
-  @ApiProperty({
-    description: 'Short Name of the club',
-    example: 'CBB',
+  @ApiPropertyOptional({
+    description: 'Nome abreviado do clube',
+    example: 'CFM',
   })
+  @IsOptional()
   @IsString()
-  shortName: string;
+  shortName?: string;
 
-  @ApiProperty({
-    description: 'Description of the club',
-    example: 'A popular club sport played with a round ball.',
-    required: false,
+  @ApiPropertyOptional({
+    description: 'Descrição do clube',
+    example: 'Clube de futebol com tradição em Moçambique.',
   })
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiProperty({
-    description: 'Icon of the club',
+  @ApiPropertyOptional({
+    description: 'Logo do clube (URL ou caminho)',
     example: 'CBB.png',
   })
   @IsOptional()
@@ -34,38 +35,81 @@ export class CreateClubDto {
   logo?: string;
 
   @ApiProperty({
-    description: 'Date Foundation',
-    example: 'AAAA-MM-DD',
+    description: 'Data de fundação do clube',
+    example: '1924-10-11T00:00:00Z',
   })
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   foundingDate: Date;
 
-  @ApiProperty({
-    description: 'Website of the cub',
-    example: 'https://associacaoblackbulls.com/',
-    required: false,
+  @ApiPropertyOptional({
+    description: 'Website oficial do clube',
+    example: 'https://www.clubeferroviario.co.mz',
   })
   @IsOptional()
   @IsString()
   website?: string;
 
-  @ApiProperty({
-    description: 'Array of sports related to the club',
-    example: ['Futebol', 'Basquetebol'],
-    required: false,
+  @ApiPropertyOptional({
+    description: 'Lista de torneios associados ao clube',
     type: [String],
+    example: ['idTorneio1', 'idTorneio2'],
   })
   @IsOptional()
-  @IsArray()
-  sports?: string[];
-
-  @ApiProperty({
-    description: 'Array of tournaments related to the club',
-    example: ['Moçambola', 'Supertaça Mario Esteves Coluna'],
-    required: false,
-    type: [String],
-  })
-  @IsOptional()
-  @IsArray()
+  @IsUUID(undefined, { each: true })
   tournaments?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Lista de times associados ao clube',
+    type: [String],
+    example: ['idTime1', 'idTime2'],
+  })
+  @IsOptional()
+  @IsUUID(undefined, { each: true })
+  teams?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Lista de jogadores do clube',
+    type: [String],
+    example: ['idJogador1', 'idJogador2'],
+  })
+  @IsOptional()
+  @IsUUID(undefined, { each: true })
+  players?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Lista de notícias relacionadas ao clube',
+    type: [String],
+    example: ['idNoticia1', 'idNoticia2'],
+  })
+  @IsOptional()
+  @IsUUID(undefined, { each: true })
+  news?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Lista de utilizadores associados ao clube',
+    type: [String],
+    example: ['idUtilizador1', 'idUtilizador2'],
+  })
+  @IsOptional()
+  @IsUUID(undefined, { each: true })
+  users?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Lista de grupos associados ao clube',
+    type: [String],
+    example: ['idGrupo1', 'idGrupo2'],
+  })
+  @IsOptional()
+  @IsUUID(undefined, { each: true })
+  groups?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Lista de treinadores do clube',
+    type: [String],
+    example: ['idTreinador1', 'idTreinador2'],
+  })
+  @IsOptional()
+  @IsUUID(undefined, { each: true })
+  coachs?: string[];
 }

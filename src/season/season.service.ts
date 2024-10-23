@@ -9,9 +9,7 @@ export class SeasonService {
 
   async create(createSeasonDto: CreateSeasonDto) {
     const { name, startDate, endDate } = createSeasonDto;
-    const startDateObject = new Date(startDate);
-    const endDateObject = new Date(endDate);
-    if (isNaN(startDateObject.getTime()) && isNaN(endDateObject.getTime())) {
+    if (isNaN(startDate.getTime()) && isNaN(endDate.getTime())) {
       throw new HttpException(
         'A data deve estar no formato AAAA-MM-DD',
         HttpStatus.BAD_REQUEST,
@@ -21,8 +19,8 @@ export class SeasonService {
     const season = await this.prismaService.season.create({
       data: {
         name,
-        startDate: startDateObject,
-        endDate: endDateObject,
+        startDate,
+        endDate,
       },
     });
     return season;

@@ -10,6 +10,7 @@ import { AuthCreateUserDto, UserDto } from './dto';
 import * as nodemailer from 'nodemailer';
 import * as speakeasy from 'speakeasy';
 import { addSeconds } from 'date-fns';
+import { UserResponse } from './dto/user.response';
 
 @Injectable()
 export class AuthService {
@@ -74,10 +75,10 @@ export class AuthService {
     return result;
   }
 
-  async create(authCreateUserDto: AuthCreateUserDto): Promise<UserDto> {
+  async create(authCreateUserDto: AuthCreateUserDto): Promise<UserResponse> {
     const user = await this.usersService.create(authCreateUserDto);
-    const { id, email, name, createdAt, updatedAt } = user;
-    return { id, email, name, createdAt, updatedAt };
+    const { id, email, name, roleId, createdAt, updatedAt } = user;
+    return { id, email, name, roleId, createdAt, updatedAt };
   }
 
   async login(user: UserDto) {

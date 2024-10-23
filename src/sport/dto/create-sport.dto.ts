@@ -1,57 +1,47 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsOptional, IsArray } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSportDto {
-  @ApiProperty({
-    description: 'Name of the sport',
-    example: 'Football',
-  })
+  @ApiProperty({ description: 'Nome do desporto', example: 'Futebol' })
   @IsString()
   name: string;
 
   @ApiProperty({
-    description: 'Icon of the sport',
+    description: 'URL ou caminho do ícone do desporto',
     example: 'football_icon.svg',
   })
   @IsString()
   icon: string;
 
-  @ApiProperty({
-    description: 'Description of the sport',
-    example: 'A popular team sport played with a round ball.',
-    required: false,
+  @ApiPropertyOptional({
+    description: 'Descrição do desporto',
+    example: 'Um desporto popular jogado por equipes de 11 jogadores.',
   })
   @IsOptional()
   @IsString()
   description?: string;
 
   @ApiProperty({
-    description: 'Array of tournaments related to the sport',
-    example: ['Premier Tournament', 'Moçambola'],
-    required: false,
+    description: 'Lista de torneios associados ao desporto',
     type: [String],
+    example: ['idTorneio1', 'idTorneio2'],
   })
-  @IsOptional()
   @IsArray()
-  tournaments?: string[];
+  tournaments: string[];
 
   @ApiProperty({
-    description: 'Array of cups related to the sport',
-    example: ['Taça de Moçambique', 'UEFA Champions Tournament'],
-    required: false,
+    description: 'Lista de equipes associadas ao desporto',
     type: [String],
+    example: ['idEquipe1', 'idEquipe2'],
   })
-  @IsOptional()
   @IsArray()
-  cups?: string[];
+  teams: string[];
 
   @ApiProperty({
-    description: 'Array of clubs related to the sport',
-    example: ['Black Fulls', 'Real Madrid'],
-    required: false,
+    description: 'Lista de utilizadores associados ao desporto',
     type: [String],
+    example: ['idUtilizador1', 'idUtilizador2'],
   })
-  @IsOptional()
   @IsArray()
-  clubs?: string[];
+  users: string[];
 }

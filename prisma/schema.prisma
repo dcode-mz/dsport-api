@@ -15,6 +15,8 @@ model User {
   name       String
   email      String       @unique
   password   String
+  roleId     String
+  role       UserRole     @relation(fields: [roleId], references: [id])
   sports     Sport[]
   tournament Tournament[]
   clubs      Club[]
@@ -23,6 +25,14 @@ model User {
   updatedAt  DateTime     @updatedAt
 
   @@map("users")
+}
+
+model UserRole {
+  id   String @id @default(uuid())
+  name String // ADMIN, USER
+  User User[]
+
+  @@map("user_role")
 }
 
 model UserOtp {
@@ -37,11 +47,11 @@ model UserOtp {
 
 model Sport {
   id          String       @id @default(uuid())
-  name        String
+  name        String       @unique
   icon        String
   description String?
   tournaments Tournament[]
-  clubs       Club[]
+  teams       Team[]
   users       User[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -62,124 +72,375 @@ model Season {
 }
 
 model Tournament {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  logo        String?
-  country     String   @default("Mozambique")
-  organizer   String
-  type        String   @default("League") // League, Cup, LeagueAndCup
-  sport       Sport    @relation(fields: [sportId], references: [id])
-  sportId     String
-  season      Season   @relation(fields: [seasonId], references: [id])
-  seasonId    String
-  stage       Stage[]
-  clubs       Club[]
-  news        News[]
-  users       User[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String              @id @default(uuid())
+  name                 String
+  description          String?
+  logo                 String?
+  countryId            String
+  country              Country             @relation(fields: [countryId], references: [id])
+  organizer            String
+  genderId             String
+  gender               GenderType          @relation(fields: [genderId], references: [id])
+  typeId               String
+  type                 TournamentType      @relation(fields: [typeId], references: [id])
+  levelId              String
+  level                TournamentLevel     @relation(fields: [levelId], references: [id])
+  formatId             String
+  format               TournamentFormat    @relation(fields: [formatId], references: [id])
+  categoryId           String
+  category             AgeCategory         @relation(fields: [categoryId], references: [id])
+  tiebreakerCriteriaId String?
+  tiebreakerCriteria   TiebreakerCriteria? @relation(fields: [tiebreakerCriteriaId], references: [id])
+  sportId              String
+  sport                Sport               @relation(fields: [sportId], references: [id])
+  seasonId             String
+  season               Season              @relation(fields: [seasonId], references: [id])
+  stages               Stage[]
+  teams                Team[]
+  leagueStanding       LeagueStanding[]
+  news                 News[]
+  users                User[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
 
   @@map("tournament")
 }
 
 model Club {
-  id              String       @id @default(uuid())
-  name            String
-  shortName       String?
-  description     String?
-  logo            String?
-  stadium         String?
-  location        String?
-  foundingDate    DateTime
-  website         String?
-  sports          Sport[]
-  tournaments     Tournament[]
-  players         Player[]
-  news            News[]
-  homeTeamMatches Match[]      @relation("HomeTeam")
-  awayTeamMatches Match[]      @relation("AwayTeam")
-  users           User[]
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  Group           Group?       @relation(fields: [groupId], references: [id])
-  groupId         String?
+  id           String   @id @default(uuid())
+  name         String
+  shortName    String?
+  description  String?
+  logo         String?
+  foundingDate DateTime
+  website      String?
+  teams        Team[]
+  news         News[]
+  users        User[]
+  groups       Group[]
+  coachs       Coach[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("club")
 }
 
+model Team {
+  id                 String              @id @default(uuid())
+  name               String
+  genderId           String
+  teamTypeId         String
+  teamType           TeamType            @relation(fields: [teamTypeId], references: [id])
+  gender             GenderType          @relation(fields: [genderId], references: [id])
+  venueId            String
+  venue              Venue               @relation(fields: [venueId], references: [id])
+  contact            String?
+  location           String?
+  homeMatches        Match[]             @relation("HomeTeam")
+  awayMatches        Match[]             @relation("AwayTeam")
+  club               Club                @relation(fields: [clubId], references: [id])
+  clubId             String
+  sportId            String
+  sport              Sport               @relation(fields: [sportId], references: [id])
+  ageCategoryId      String
+  ageCategory        AgeCategory         @relation(fields: [ageCategoryId], references: [id])
+  formatId           String?
+  format             FormatTeam?         @relation(fields: [formatId], references: [id])
+  players            Player[]
+  captainId          String?             @unique
+  captain            Player?             @relation("TeamCaptain", fields: [captainId], references: [id])
+  viceCaptainId      String?             @unique
+  viceCaptain        Player?             @relation("TeamViceCaptain", fields: [viceCaptainId], references: [id])
+  coachId            String?             @unique
+  coach              Coach?              @relation(fields: [coachId], references: [id])
+  tournaments        Tournament[]
+  leagueStanding     LeagueStanding[]
+  nationalTeamSquads NationalTeamSquad[]
+  nationalTeam       NationalTeam[]
+  formations         TacticalFormation[]
+  positions          PlayerPosition[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@map("team")
+}
+
+model Venue {
+  id        String   @id @default(uuid())
+  name      String
+  location  String
+  capacity  Int?
+  matchs    Match[]
+  teams     Team[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("venue")
+}
+
 model Match {
-  id             String   @id @default(uuid())
-  dateTime       DateTime
-  stadium        String
-  location       String
-  referee        String
-  attendance     Float
-  homeTeam       Club     @relation("HomeTeam", fields: [homeTeamId], references: [id])
-  homeTeamId     String
-  awayTeam       Club     @relation("AwayTeam", fields: [awayTeamId], references: [id])
-  awayTeamId     String
-  resultHomeTeam Int?
-  resultAwayTeam Int?
-  matchday       Matchday @relation(fields: [matchdayId], references: [id])
-  matchdayId     String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                String              @id @default(uuid())
+  dateTime          DateTime
+  venueId           String
+  venue             Venue               @relation(fields: [venueId], references: [id])
+  location          String
+  refereeId         String
+  referee           Referee             @relation(fields: [refereeId], references: [id])
+  attendance        Int
+  teamTypeid        String
+  teamType          TeamType            @relation(fields: [teamTypeid], references: [id])
+  homeTeamId        String
+  homeTeam          Team                @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId        String
+  awayTeam          Team                @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  resultHomeTeam    Int?
+  resultAwayTeam    Int?
+  statusId          String
+  status            MatchStatus         @relation(fields: [statusId], references: [id])
+  matchday          Matchday?           @relation(fields: [matchdayId], references: [id])
+  matchdayId        String?
+  numberPeriods     Int
+  durationPerPeriod Int
+  halfTimeDuration  Int?
+  matchStats        MatchStat[]
+  playerStats       PlayerStat[]
+  events            MatchEvent[]
+  perfomances       PlayerPerformance[]
+  convocations      PlayerConvocation[]
+  formations        TacticalFormation[]
+  positions         PlayerPosition[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 
   @@map("match")
+}
+
+model TacticalFormation {
+  id                String           @id @default(uuid())
+  matchId           String
+  match             Match            @relation(fields: [matchId], references: [id])
+  teamId            String
+  team              Team             @relation(fields: [teamId], references: [id])
+  formationSchemeId String
+  formationScheme   FormationScheme  @relation(fields: [formationSchemeId], references: [id])
+  positions         PlayerPosition[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@map("tactical_formation")
+}
+
+model PlayerConvocation {
+  id                String           @id @default(uuid())
+  matchId           String
+  match             Match            @relation(fields: [matchId], references: [id])
+  playerId          String
+  player            Player           @relation(fields: [playerId], references: [id])
+  playerConditionId String?
+  playerCondition   PlayerCondition? @relation(fields: [playerConditionId], references: [id])
+  calledUp          Boolean          @default(false)
+  absenceReason     String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@map("player_convocation")
+}
+
+model PlayerPosition {
+  id                Int               @id @default(autoincrement())
+  matchId           String
+  match             Match             @relation(fields: [matchId], references: [id])
+  teamId            String
+  team              Team              @relation(fields: [teamId], references: [id])
+  playerId          String
+  player            Player            @relation(fields: [playerId], references: [id])
+  positionId        String
+  position          PositionField     @relation(fields: [positionId], references: [id])
+  formationId       String
+  tacticalFormation TacticalFormation @relation(fields: [formationId], references: [id])
+  starter           Boolean           @default(false)
+  onField           Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@map("player_position")
+}
+
+model PlayerPerformance {
+  id        String   @id @default(uuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id])
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id])
+  score     Float
+  isMVP     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("player_perfomance")
+}
+
+model MatchStat {
+  id              String   @id @default(uuid())
+  matchId         String
+  match           Match    @relation(fields: [matchId], references: [id])
+  homeScore       Int
+  awayScore       Int
+  shotsHome       Int
+  shotsAway       Int
+  possessionHome  Int
+  possessionAway  Int
+  foulsHome       Int
+  foulsAway       Int
+  yellowCardsHome Int
+  yellowCardsAway Int
+  redCardsHome    Int
+  redCardsAway    Int
+  cornersHome     Int
+  cornersAway     Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("match_stats")
 }
 
 model Stage {
   id           String     @id @default(uuid())
   name         String
   order        Int
-  type         String // Group, Knockout
+  typeId       String
+  type         StageType  @relation(fields: [typeId], references: [id])
   hasMatchdays Boolean
   homeAndAway  Boolean // If true, matches are played home and away
   tournament   Tournament @relation(fields: [tournamentId], references: [id])
   tournamentId String
   groups       Group[]
   matchdays    Matchday[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@map("stage")
 }
 
 model Group {
-  id      String @id @default(uuid())
-  name    String
-  stage   Stage  @relation(fields: [stageId], references: [id])
-  stageId String
-  clubs   Club[]
+  id        String   @id @default(uuid())
+  name      String
+  stage     Stage    @relation(fields: [stageId], references: [id])
+  stageId   String
+  clubs     Club[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("group")
 }
 
 model Matchday {
-  id      String  @id @default(uuid())
-  number  Int
-  stage   Stage   @relation(fields: [stageId], references: [id])
-  stageId String
-  matches Match[]
+  id        String   @id @default(uuid())
+  number    Int
+  stage     Stage    @relation(fields: [stageId], references: [id])
+  stageId   String
+  matches   Match[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("matchday")
 }
 
 model Player {
-  id          String   @id @default(uuid())
-  name        String
-  position    String
-  dateOfBirth DateTime
-  nationality String
-  height      Float
-  weight      Float
-  photoUrl    String?
-  currentClub Club?    @relation(fields: [clubId], references: [id])
-  clubId      String?
-  news        News[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                     String              @id @default(uuid())
+  name                   String
+  nickname               String?
+  positionId             String
+  position               PositionField       @relation(fields: [positionId], references: [id])
+  dateOfBirth            DateTime
+  primaryNationalityId   String
+  primaryNationality     Country             @relation(fields: [primaryNationalityId], references: [id])
+  jersey_number_club     Int?
+  jersey_number_national Int?
+  height                 Float
+  weight                 Float
+  photoUrl               String?
+  teamId                 String?
+  team                   Team?               @relation(fields: [teamId], references: [id])
+  captainOfTeams         Team?               @relation("TeamCaptain")
+  viceCaptainOfTeams     Team?               @relation("TeamViceCaptain")
+  stats                  PlayerStat[]
+  news                   News[]
+  events                 MatchEventPlayer[]
+  perfomances            PlayerPerformance[]
+  convocations           PlayerConvocation[]
+  conditions             PlayerCondition[]
+  nationalTeamSquad      NationalTeamSquad[]
+  positions              PlayerPosition[]
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
 
   @@map("player")
+}
+
+model PlayerStat {
+  id            String   @id @default(uuid())
+  playerId      String
+  player        Player   @relation(fields: [playerId], references: [id])
+  matchId       String
+  match         Match    @relation(fields: [matchId], references: [id])
+  goals         Int      @default(0)
+  assists       Int      @default(0)
+  yellowCards   Int      @default(0)
+  redCards      Int      @default(0)
+  minutesPlayed Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("player_stats")
+}
+
+model PlayerCondition {
+  id           String              @id @default(uuid())
+  playerId     String
+  player       Player              @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  statusId     String
+  status       PlayerHealthStatus  @relation(fields: [statusId], references: [id])
+  injuryDate   DateTime?
+  returnDate   DateTime?
+  notes        String?
+  convocations PlayerConvocation[]
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@map("player_condition")
+}
+
+model Coach {
+  id                String              @id @default(uuid())
+  name              String
+  dateOfBirth       DateTime
+  nationality       String
+  photoUrl          String?
+  team              Team?
+  teamId            String?
+  clubId            String?
+  Club              Club?               @relation(fields: [clubId], references: [id])
+  news              News[]
+  nationalTeamSquad NationalTeamSquad[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@map("coach")
+}
+
+model Referee {
+  id          String    @id @default(uuid())
+  name        String
+  dateOfBirth DateTime?
+  nationality String
+  photoUrl    String?
+  news        News[]
+  matches     Match[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("referee")
 }
 
 model News {
@@ -194,8 +455,258 @@ model News {
   playerId             String?
   associatedTournament Tournament? @relation(fields: [tournamentId], references: [id])
   tournamentId         String?
+  coach                Coach?      @relation(fields: [coachId], references: [id])
+  coachId              String?
+  referee              Referee?    @relation(fields: [refereeId], references: [id])
+  refereeId            String?
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
 
   @@map("news")
+}
+
+model MatchEvent {
+  id        String             @id @default(uuid())
+  type      MatchEventType     @relation(fields: [typeId], references: [id])
+  typeId    String
+  time      Int
+  details   String?
+  players   MatchEventPlayer[]
+  matchId   String
+  match     Match              @relation(fields: [matchId], references: [id])
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@map("match_event")
+}
+
+model MatchEventPlayer {
+  id        String     @id @default(uuid())
+  eventId   String
+  event     MatchEvent @relation(fields: [eventId], references: [id])
+  playerId  String
+  player    Player     @relation(fields: [playerId], references: [id])
+  role      String // Papel do jogador no evento: Autor do Gol, Assistente, Jogador que Entra, etc.
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("match_event_player")
+}
+
+model NationalTeam {
+  id            String              @id @default(uuid())
+  name          String
+  countryId     String
+  country       Country             @relation(fields: [countryId], references: [id])
+  abbreviation  String
+  ageCategoryId String
+  ageCategory   AgeCategory         @relation(fields: [ageCategoryId], references: [id])
+  teamId        String
+  team          Team                @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  players       NationalTeamSquad[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@map("national_team")
+}
+
+model NationalTeamSquad {
+  id             String             @id @default(uuid())
+  name           String
+  nationalTeamId String
+  nationalTeam   NationalTeam       @relation(fields: [nationalTeamId], references: [id])
+  playerId       String
+  player         Player             @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  statusId       String
+  status         PlayerHealthStatus @relation(fields: [statusId], references: [id])
+  coachId        String?
+  coach          Coach?             @relation(fields: [coachId], references: [id])
+  Team           Team?              @relation(fields: [teamId], references: [id])
+  teamId         String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@map("national_team_squad")
+}
+
+model Country {
+  id            String         @id @default(uuid())
+  name          String
+  logo          String?
+  nationalTeams NationalTeam[]
+  tournaments   Tournament[]
+  players       Player[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("country")
+}
+
+model LeagueStanding {
+  id             String     @id @default(uuid())
+  tournamentId   String
+  tournament     Tournament @relation(fields: [tournamentId], references: [id])
+  teamId         String
+  team           Team       @relation(fields: [teamId], references: [id])
+  played         Int        @default(0)
+  won            Int        @default(0)
+  drawn          Int        @default(0)
+  lost           Int        @default(0)
+  points         Int        @default(0)
+  goalsFor       Int        @default(0)
+  goalsAgainst   Int        @default(0)
+  goalDifference Int        @default(0)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@map("league_standing")
+}
+
+model FormationPosition {
+  id                String          @id @default(uuid())
+  formationSchemeId String
+  formationScheme   FormationScheme @relation(fields: [formationSchemeId], references: [id])
+  positionId        String
+  position          PositionField   @relation(fields: [positionId], references: [id])
+  count             Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@unique([formationSchemeId, positionId])
+  @@map("formation_position")
+}
+
+model TournamentType {
+  id   String @id @default(uuid())
+  name String // League, Cup, LeagueAndCup
+
+  Tournament Tournament[]
+
+  @@map("tournament_type")
+}
+
+model TournamentLevel {
+  id   String @id @default(uuid())
+  name String // Nacional, Internacional, Regional 
+
+  Tournament Tournament[]
+
+  @@map("tournament_level")
+}
+
+model TournamentFormat {
+  id   String @id @default(uuid())
+  name String // Running Point, Eliminação Direta, Fase de Grupos 
+
+  Tournament Tournament[]
+
+  @@map("tournament_format")
+}
+
+model AgeCategory {
+  id   String @id @default(uuid())
+  name String // Senior, Sub-21, Juvenil
+
+  Team         Team[]
+  Tournament   Tournament[]
+  NationalTeam NationalTeam[]
+
+  @@map("age_category")
+}
+
+model MatchEventType {
+  id   String @id @default(uuid())
+  name String // PENALTY_GOAL, ...
+
+  MatchEvent MatchEvent[]
+
+  @@map("match_event_type")
+}
+
+model GenderType {
+  id   String @id @default(uuid())
+  name String // Masculino, Feminino, Misto
+
+  Tournament Tournament[]
+  Team       Team[]
+
+  @@map("gender_type")
+}
+
+model FormatTeam {
+  id   String @id @default(uuid())
+  name String // 11 vs 11, 10 vs 10
+
+  Team Team[]
+
+  @@map("format_team")
+}
+
+model PositionField {
+  id   String @id @default(uuid())
+  name String // GoalKeeper
+
+  Player            Player[]
+  PlayerPosition    PlayerPosition[]
+  FormationPosition FormationPosition[]
+
+  @@map("position_field")
+}
+
+model TiebreakerCriteria {
+  id   String @id @default(uuid())
+  name String // Confronto direto, Golos marcados, Saldo de golos
+
+  Tournament Tournament[]
+
+  @@map("tiebreaker_criteria")
+}
+
+model PlayerHealthStatus {
+  id   String @id @default(uuid())
+  name String // DISPONIVEL, LESIONADO, SUSPENSO, EM_REABILITACAO
+
+  PlayerCondition   PlayerCondition[]
+  NationalTeamSquad NationalTeamSquad[]
+
+  @@map("player_health_status")
+}
+
+model TeamType {
+  id   String @id @default(uuid())
+  name String // CLUB, NATIONAL
+
+  Match Match[]
+  Team  Team[]
+
+  @@map("team_type")
+}
+
+model MatchStatus {
+  id   String @id @default(uuid())
+  name String // NOT_STARTED, IN_PROGRESS, HALFTIME, FINISHED
+
+  Match Match[]
+
+  @@map("match_status")
+}
+
+model StageType {
+  id   String @id @default(uuid())
+  name String // grupo, eliminatória, final
+
+  Stage Stage[]
+
+  @@map("stage_type")
+}
+
+model FormationScheme {
+  id   String @id @default(uuid())
+  formation String // e.g., "4-4-2", "4-3-3", "3-5-2"
+  label String
+
+  tacticalFormations TacticalFormation[]
+  formationPositions FormationPosition[]
+
+  @@map("formation_scheme")
 }

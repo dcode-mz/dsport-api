@@ -15,17 +15,8 @@ export class ClubService {
 
   async create(createClubDto: CreateClubDto) {
     try {
-      const {
-        name,
-        shortName,
-        description,
-        foundingDate: date,
-        logo,
-        website,
-        tournaments,
-        sports,
-      } = createClubDto;
-      const foundingDate = new Date(date);
+      const { name, shortName, description, logo, foundingDate, website } =
+        createClubDto;
 
       if (isNaN(foundingDate.getTime())) {
         throw new HttpException(
@@ -42,12 +33,6 @@ export class ClubService {
           foundingDate,
           logo,
           website,
-          sports: {
-            connect: sports.map((id) => ({ id })),
-          },
-          tournaments: {
-            connect: tournaments.map((id) => ({ id })),
-          },
         },
       });
 
@@ -67,18 +52,18 @@ export class ClubService {
     return club;
   }
 
-  async findBySport(idSport: string) {
-    const clubs = this.prismaService.club.findMany({
-      where: {
-        sports: {
-          some: {
-            id: idSport,
-          },
-        },
-      },
-    });
-    return clubs;
-  }
+  // async findBySport(idSport: string) {
+  //   const clubs = this.prismaService.club.findMany({
+  //     where: {
+  //       sports: {
+  //         some: {
+  //           id: idSport,
+  //         },
+  //       },
+  //     },
+  //   });
+  //   return clubs;
+  // }
 
   async update(id: string, updateClubDto: UpdateClubDto) {
     const {

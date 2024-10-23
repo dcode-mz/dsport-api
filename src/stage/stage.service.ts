@@ -11,11 +11,11 @@ export class StageService {
       data: {
         name: createStageDto.name,
         order: createStageDto.order,
-        type: createStageDto.type,
+        type: { connect: { id: createStageDto.typeId } },
         hasMatchdays: createStageDto.hasMatchdays,
         homeAndAway: createStageDto.homeAndAway,
         tournament: {
-          connect: { id: createStageDto.tournamentId }, // ID do torneio ao qual este Stage pertence
+          connect: { id: createStageDto.tournamentId },
         },
       },
     });

@@ -1,56 +1,119 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsUUID, IsOptional, IsArray } from 'class-validator';
 
 export class CreateTournamentDto {
-  @ApiProperty({
-    description: 'Name of the tournament',
-    example: 'Moçambola',
-  })
+  @ApiProperty({ description: 'Nome do torneio', example: 'Taça Moçambique' })
   @IsString()
   name: string;
 
-  @ApiProperty({
-    description: 'Description of the tournament',
-    example: 'A popular tournament sport played with a round ball.',
-    required: false,
+  @ApiPropertyOptional({
+    description: 'Descrição do torneio',
+    example: 'Torneio nacional de futebol em Moçambique.',
   })
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiProperty({
-    description: 'Icon of the tournament',
-    example: 'mocambola.png',
+  @ApiPropertyOptional({
+    description: 'Logo do torneio (URL ou caminho)',
+    example: '/logos/taca_mocambique.png',
   })
   @IsOptional()
   @IsString()
   logo?: string;
 
   @ApiProperty({
-    description: 'Id of the Country',
-    example: 'ebaf95bc-cba2-493d-8086-73ddbd764334',
+    description: 'Identificador do país do torneio',
+    example: 'idPais1',
   })
-  @IsString()
-  country: string;
+  @IsUUID()
+  countryId: string;
 
   @ApiProperty({
-    description: 'Organizer',
-    example: 'FMF',
+    description: 'Organizador do torneio',
+    example: 'Federação Moçambicana de Futebol',
   })
   @IsString()
   organizer: string;
 
   @ApiProperty({
-    description: 'Id of the sport',
-    example: 'ebaf95bc-cba2-493d-8086-73ddbd764334',
+    description: 'Identificador do gênero do torneio',
+    example: 'idGenero1',
   })
-  @IsString()
+  @IsUUID()
+  genderId: string;
+
+  @ApiProperty({
+    description: 'Identificador do tipo de torneio',
+    example: 'idTipo1',
+  })
+  @IsUUID()
+  typeId: string;
+
+  @ApiProperty({
+    description: 'Identificador do nível do torneio',
+    example: 'idNivel1',
+  })
+  @IsUUID()
+  levelId: string;
+
+  @ApiProperty({
+    description: 'Identificador do formato do torneio',
+    example: 'idFormato1',
+  })
+  @IsUUID()
+  formatId: string;
+
+  @ApiProperty({
+    description: 'Identificador da categoria de idade do torneio',
+    example: 'idCategoria1',
+  })
+  @IsUUID()
+  categoryId: string;
+
+  @ApiPropertyOptional({
+    description: 'Identificador dos critérios de desempate',
+    example: 'idDesempate1',
+  })
+  @IsOptional()
+  @IsUUID()
+  tiebreakerCriteriaId?: string;
+
+  @ApiProperty({
+    description: 'Identificador do desporto',
+    example: 'idDesporto1',
+  })
+  @IsUUID()
   sportId: string;
 
   @ApiProperty({
-    description: 'Id of the season',
-    example: 'ebaf95bc-cba2-493d-8086-73ddbd764334',
+    description: 'Identificador da temporada',
+    example: 'idTemporada1',
   })
-  @IsString()
+  @IsUUID()
   seasonId: string;
+
+  @ApiProperty({
+    description: 'Lista de fases do torneio',
+    type: [String],
+    example: ['idFase1', 'idFase2'],
+  })
+  @IsArray()
+  stage: string[];
+
+  @ApiProperty({
+    description: 'Lista de clubes participantes',
+    type: [String],
+    example: ['idClube1', 'idClube2'],
+  })
+  @IsArray()
+  clubs: string[];
+
+  @ApiProperty({
+    description: 'Lista de utilizadores associados ao torneio',
+    type: [String],
+    example: ['idUtilizador1', 'idUtilizador2'],
+  })
+  @IsArray()
+  users: string[];
 }

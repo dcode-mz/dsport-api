@@ -17,6 +17,7 @@ import {
   ApiForbiddenResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AddTeamsToTournamentDto } from './dto/add-clubs-to-tournament.dto';
 
 @ApiTags('tournament')
 @Controller('tournament')
@@ -37,13 +38,20 @@ export class TournamentController {
     return this.tournamentService.findAll();
   }
 
-  @Get('tournaments')
-  findTournamentsWithPlayers(
-    @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
-    ids: string[],
+  @Post('add/clubs')
+  addTeamsToTournament(
+    @Body() addTeamsToTournamentDto: AddTeamsToTournamentDto,
   ) {
-    return this.tournamentService.findTournamentsWithClubs(ids);
+    return this.tournamentService.addTeamsToTournament(addTeamsToTournamentDto);
   }
+
+  // @Get('tournaments')
+  // findTournamentsWithPlayers(
+  //   @Query('ids', new ParseArrayPipe({ items: String, separator: ',' }))
+  //   ids: string[],
+  // ) {
+  //   return this.tournamentService.findTournamentsWithClubs(ids);
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -10,35 +10,41 @@ export class PlayerService {
   async create(createPlayerDto: CreatePlayerDto) {
     const {
       name,
-      position,
+      nickname,
+      positionId,
       dateOfBirth,
-      nationality,
+      primaryNationalityId,
+      jersey_number_club,
+      jersey_number_national,
       height,
       weight,
       photoUrl,
-      clubId,
+      teamId,
     } = createPlayerDto;
-    const dateOfBirthValidated = new Date(dateOfBirth);
-    if (isNaN(dateOfBirthValidated.getTime())) {
-      throw new HttpException(
-        'A data deve estar no formato AAAA-MM-DD',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     const player = await this.prismaService.player.create({
       data: {
         name,
-        position,
-        dateOfBirth: dateOfBirthValidated,
-        nationality,
+        nickname,
+        position: { connect: { id: positionId } },
+        dateOfBirth: dateOfBirth,
+        primaryNationality: { connect: { id: primaryNationalityId } },
+        jersey_number_club,
+        jersey_number_national,
         height,
         weight,
         photoUrl,
-        clubId,
+        team: { connect: { id: teamId } },
       },
     });
     return player;
+  }
+
+  async createPlayers(playersData: CreatePlayerDto[]) {
+    const players = await this.prismaService.player.createMany({
+      data: playersData,
+    });
+    return players;
   }
 
   async findAll() {
@@ -56,26 +62,32 @@ export class PlayerService {
   async update(id: string, updatePlayerDto: UpdatePlayerDto) {
     const {
       name,
-      position,
+      nickname,
+      positionId,
       dateOfBirth,
-      nationality,
+      primaryNationalityId,
+      jersey_number_club,
+      jersey_number_national,
       height,
       weight,
       photoUrl,
-      clubId,
+      teamId,
     } = updatePlayerDto;
 
     const player = await this.prismaService.player.update({
       where: { id },
       data: {
         name,
-        position,
-        dateOfBirth,
-        nationality,
+        nickname,
+        position: { connect: { id: positionId } },
+        dateOfBirth: dateOfBirth,
+        primaryNationality: { connect: { id: primaryNationalityId } },
+        jersey_number_club,
+        jersey_number_national,
         height,
         weight,
         photoUrl,
-        clubId,
+        team: { connect: { id: teamId } },
       },
     });
     return player;

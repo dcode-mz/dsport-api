@@ -1,25 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDate, IsString, IsArray } from 'class-validator';
 
 export class CreateSeasonDto {
   @ApiProperty({
-    description: 'Year of the Season',
-    example: '2024',
+    description: 'Nome da temporada',
+    example: 'Temporada 2023/2024',
   })
   @IsString()
   name: string;
 
   @ApiProperty({
-    description: 'Start Date of the Season',
-    example: '2024-03-24T00:00:00.000Z',
+    description: 'Data de início da temporada',
+    example: '2023-08-01T00:00:00Z',
   })
-  @IsDateString()
-  startDate: string;
+  @IsDate()
+  @Type(() => Date)
+  startDate: Date;
 
   @ApiProperty({
-    description: 'End Date of the Season',
-    example: '2024-03-24T00:00:00.000Z',
+    description: 'Data de término da temporada',
+    example: '2024-06-30T23:59:59Z',
   })
-  @IsDateString()
-  endDate: string;
+  @IsDate()
+  @Type(() => Date)
+  endDate: Date;
+
+  @ApiProperty({
+    description: 'Lista de torneios associados à temporada',
+    type: [String],
+    example: ['idTorneio1', 'idTorneio2'],
+  })
+  @IsArray()
+  tournaments: string[];
 }
