@@ -71,17 +71,18 @@ export class AuthService {
     if (!user) return null;
     const passwordChecked = await bcrypt.compare(pass, user.password);
     if (!passwordChecked) return null;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = user;
     return result;
   }
 
   async create(authCreateUserDto: AuthCreateUserDto): Promise<UserResponse> {
     const user = await this.usersService.create(authCreateUserDto);
-    const { id, email, name, roleId, createdAt, updatedAt } = user;
-    return { id, email, name, roleId, createdAt, updatedAt };
+    const { id, email, name, role } = user;
+    return { id, email, name, role };
   }
 
-  async login(user: UserDto) {
+  async login(user: UserDto): Promise<{ access_token: string }> {
     const payload = { name: user.name, email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),

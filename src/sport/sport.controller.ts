@@ -19,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import { ResponseBody } from 'src/common/dto/ResponseBody';
 
 @ApiTags('sports')
 @Controller('sports')
@@ -40,8 +41,11 @@ export class SportController {
   }
 
   @Get('tournaments')
-  findSportsWithTournaments() {
-    return this.sportService.findSportsWithTournaments();
+  async findSportsWithTournaments(@Res() res: Response) {
+    const response: ResponseBody<SportsTournamentsResponse[]> =
+      await this.sportService.findSportsWithTournaments();
+
+    res.status(HttpStatus.OK).json(response);
   }
 
   // @Get('clubs')

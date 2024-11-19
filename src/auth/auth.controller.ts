@@ -19,6 +19,7 @@ import {
   ApiForbiddenResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SendOtpRequest } from './dto/send-otp.request';
 
 class CreateUserResponse {
   user: UserDto;
@@ -74,8 +75,10 @@ export class AuthController {
   }
 
   @Post('send-otp')
-  async sendOtp(@Body('email') email: string, @Res() res: Response) {
-    const { message } = await this.authService.generateOtp(email);
+  async sendOtp(@Body() sendOtpRequest: SendOtpRequest, @Res() res: Response) {
+    const { message } = await this.authService.generateOtp(
+      sendOtpRequest.email,
+    );
     const response = new ResponseBody<{ message: string }>(message, null, true);
     res.status(HttpStatus.OK).json(response);
   }

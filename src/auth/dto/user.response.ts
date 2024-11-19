@@ -1,9 +1,8 @@
+import { UserRoleDto } from './user-role.dto';
+
 export class UserResponse {
   id: string;
   name: string;
   email: string;
-  password?: string;
-  roleId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  role: UserRoleDto;
 }

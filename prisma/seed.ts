@@ -124,11 +124,6 @@ async function main() {
     ],
   });
 
-  // Criar status de convocação
-  const callUpStatuses = await prisma.callUpStatus.createMany({
-    data: [{ name: 'CONVOCADO' }, { name: 'AUSENTE' }],
-  });
-
   // Criar status de saúde dos jogadores
   const playerHealthStatuses = await prisma.playerHealthStatus.createMany({
     data: [
@@ -216,6 +211,10 @@ async function main() {
       { formation: '3-4-1-2', label: '3-4-1-2 Ofensivo' },
       { formation: '3-4-1-2', label: '3-4-1-2 Defensivo' },
     ],
+  });
+
+  const userRoles = await prisma.userRole.createMany({
+    data: [{ name: 'ADMIN' }, { name: 'USER' }],
   });
 
   console.log('Match statuses created successfully.');

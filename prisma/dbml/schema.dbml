@@ -1,0 +1,778 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id String [pk]
+  name String [not null]
+  email String [unique, not null]
+  password String [not null]
+  roleId String [not null]
+  role user_role [not null]
+  sports sport [not null]
+  tournament tournament [not null]
+  clubs club [not null]
+  userOtp user_otp
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table user_role {
+  id String [pk]
+  name String [not null]
+  User users [not null]
+}
+
+Table user_otp {
+  id String [pk]
+  otp String [not null]
+  otpExpiry DateTime [not null]
+  user users [not null]
+  userId String [unique, not null]
+}
+
+Table sport {
+  id String [pk]
+  name String [unique, not null]
+  icon String [not null]
+  description String
+  tournaments tournament [not null]
+  teams team [not null]
+  users users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table season {
+  id String [pk]
+  name String [not null]
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  tournaments tournament [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table tournament {
+  id String [pk]
+  name String [not null]
+  description String
+  logo String
+  countryId String [not null]
+  country country [not null]
+  organizer String [not null]
+  genderId String [not null]
+  gender gender_type [not null]
+  typeId String [not null]
+  type tournament_type [not null]
+  levelId String [not null]
+  level tournament_level [not null]
+  formatId String [not null]
+  format tournament_format [not null]
+  categoryId String [not null]
+  category age_category [not null]
+  tiebreakerCriteriaId String
+  tiebreakerCriteria tiebreaker_criteria
+  sportId String [not null]
+  sport sport [not null]
+  seasonId String [not null]
+  season season [not null]
+  stages stage [not null]
+  teams team [not null]
+  leagueStanding league_standing [not null]
+  news news [not null]
+  users users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table club {
+  id String [pk]
+  name String [not null]
+  shortName String
+  description String
+  logo String
+  foundingDate DateTime [not null]
+  website String
+  teams team [not null]
+  news news [not null]
+  users users [not null]
+  groups group [not null]
+  coachs coach [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table team {
+  id String [pk]
+  name String [not null]
+  genderId String [not null]
+  teamTypeId String [not null]
+  teamType team_type [not null]
+  gender gender_type [not null]
+  venueId String [not null]
+  venue venue [not null]
+  contact String
+  location String
+  homeMatches match [not null]
+  awayMatches match [not null]
+  club club [not null]
+  clubId String [not null]
+  sportId String [not null]
+  sport sport [not null]
+  ageCategoryId String [not null]
+  ageCategory age_category [not null]
+  formatId String
+  format format_team
+  players player [not null]
+  captainId String [unique]
+  captain player
+  viceCaptainId String [unique]
+  viceCaptain player
+  coachId String [unique]
+  coach coach
+  tournaments tournament [not null]
+  leagueStanding league_standing [not null]
+  nationalTeamSquads national_team_squad [not null]
+  nationalTeam national_team [not null]
+  formations tactical_formation [not null]
+  positions player_position [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table venue {
+  id String [pk]
+  name String [not null]
+  location String [not null]
+  capacity Int
+  matchs match [not null]
+  teams team [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table match {
+  id String [pk]
+  dateTime DateTime [not null]
+  venueId String [not null]
+  venue venue [not null]
+  location String [not null]
+  refereeId String [not null]
+  referee referee [not null]
+  attendance Int [not null]
+  teamTypeid String [not null]
+  teamType team_type [not null]
+  homeTeamId String [not null]
+  homeTeam team [not null]
+  awayTeamId String [not null]
+  awayTeam team [not null]
+  resultHomeTeam Int
+  resultAwayTeam Int
+  statusId String [not null]
+  status match_status [not null]
+  matchday matchday
+  matchdayId String
+  numberPeriods Int [not null]
+  durationPerPeriod Int [not null]
+  halfTimeDuration Int
+  matchStats match_stats [not null]
+  playerStats player_stats [not null]
+  events match_event [not null]
+  perfomances player_perfomance [not null]
+  convocations player_convocation [not null]
+  formations tactical_formation [not null]
+  positions player_position [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table tactical_formation {
+  id String [pk]
+  matchId String [not null]
+  match match [not null]
+  teamId String [not null]
+  team team [not null]
+  formationSchemeId String [not null]
+  formationScheme formation_scheme [not null]
+  positions player_position [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table player_convocation {
+  id String [pk]
+  matchId String [not null]
+  match match [not null]
+  playerId String [not null]
+  player player [not null]
+  playerConditionId String
+  playerCondition player_condition
+  calledUp Boolean [not null, default: false]
+  absenceReason String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table player_position {
+  id Int [pk, increment]
+  matchId String [not null]
+  match match [not null]
+  teamId String [not null]
+  team team [not null]
+  playerId String [not null]
+  player player [not null]
+  positionId String [not null]
+  position position_field [not null]
+  formationId String [not null]
+  tacticalFormation tactical_formation [not null]
+  starter Boolean [not null, default: false]
+  onField Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table player_perfomance {
+  id String [pk]
+  matchId String [not null]
+  match match [not null]
+  playerId String [not null]
+  player player [not null]
+  score Float [not null]
+  isMVP Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table match_stats {
+  id String [pk]
+  matchId String [not null]
+  match match [not null]
+  homeScore Int [not null]
+  awayScore Int [not null]
+  shotsHome Int [not null]
+  shotsAway Int [not null]
+  possessionHome Int [not null]
+  possessionAway Int [not null]
+  foulsHome Int [not null]
+  foulsAway Int [not null]
+  yellowCardsHome Int [not null]
+  yellowCardsAway Int [not null]
+  redCardsHome Int [not null]
+  redCardsAway Int [not null]
+  cornersHome Int [not null]
+  cornersAway Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table stage {
+  id String [pk]
+  name String [not null]
+  order Int [not null]
+  typeId String [not null]
+  type stage_type [not null]
+  hasMatchdays Boolean [not null]
+  homeAndAway Boolean [not null]
+  tournament tournament [not null]
+  tournamentId String [not null]
+  groups group [not null]
+  matchdays matchday [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table group {
+  id String [pk]
+  name String [not null]
+  stage stage [not null]
+  stageId String [not null]
+  clubs club [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table matchday {
+  id String [pk]
+  number Int [not null]
+  stage stage [not null]
+  stageId String [not null]
+  matches match [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table player {
+  id String [pk]
+  name String [not null]
+  nickname String
+  positionId String [not null]
+  position position_field [not null]
+  dateOfBirth DateTime [not null]
+  primaryNationalityId String [not null]
+  primaryNationality country [not null]
+  jersey_number_club Int
+  jersey_number_national Int
+  height Float [not null]
+  weight Float [not null]
+  photoUrl String
+  teamId String
+  team team
+  captainOfTeams team
+  viceCaptainOfTeams team
+  stats player_stats [not null]
+  news news [not null]
+  events match_event_player [not null]
+  perfomances player_perfomance [not null]
+  convocations player_convocation [not null]
+  conditions player_condition [not null]
+  nationalTeamSquad national_team_squad [not null]
+  positions player_position [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table player_stats {
+  id String [pk]
+  playerId String [not null]
+  player player [not null]
+  matchId String [not null]
+  match match [not null]
+  goals Int [not null, default: 0]
+  assists Int [not null, default: 0]
+  yellowCards Int [not null, default: 0]
+  redCards Int [not null, default: 0]
+  minutesPlayed Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table player_condition {
+  id String [pk]
+  playerId String [not null]
+  player player [not null]
+  statusId String [not null]
+  status player_health_status [not null]
+  injuryDate DateTime
+  returnDate DateTime
+  notes String
+  convocations player_convocation [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table coach {
+  id String [pk]
+  name String [not null]
+  dateOfBirth DateTime [not null]
+  nationality String [not null]
+  photoUrl String
+  team team
+  teamId String
+  clubId String
+  Club club
+  news news [not null]
+  nationalTeamSquad national_team_squad [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table referee {
+  id String [pk]
+  name String [not null]
+  dateOfBirth DateTime
+  nationality String [not null]
+  photoUrl String
+  news news [not null]
+  matches match [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table news {
+  id String [pk]
+  title String [not null]
+  content String [not null]
+  publishDate DateTime [not null]
+  author String [not null]
+  associatedClub club
+  clubId String
+  associatedPlayer player
+  playerId String
+  associatedTournament tournament
+  tournamentId String
+  coach coach
+  coachId String
+  referee referee
+  refereeId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table match_event {
+  id String [pk]
+  type match_event_type [not null]
+  typeId String [not null]
+  time Int [not null]
+  details String
+  players match_event_player [not null]
+  matchId String [not null]
+  match match [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table match_event_player {
+  id String [pk]
+  eventId String [not null]
+  event match_event [not null]
+  playerId String [not null]
+  player player [not null]
+  role String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table national_team {
+  id String [pk]
+  name String [not null]
+  countryId String [not null]
+  country country [not null]
+  abbreviation String [not null]
+  ageCategoryId String [not null]
+  ageCategory age_category [not null]
+  teamId String [not null]
+  team team [not null]
+  players national_team_squad [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table national_team_squad {
+  id String [pk]
+  name String [not null]
+  nationalTeamId String [not null]
+  nationalTeam national_team [not null]
+  playerId String [not null]
+  player player [not null]
+  statusId String [not null]
+  status player_health_status [not null]
+  coachId String
+  coach coach
+  Team team
+  teamId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table country {
+  id String [pk]
+  name String [not null]
+  logo String
+  nationalTeams national_team [not null]
+  tournaments tournament [not null]
+  players player [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table league_standing {
+  id String [pk]
+  tournamentId String [not null]
+  tournament tournament [not null]
+  teamId String [not null]
+  team team [not null]
+  played Int [not null, default: 0]
+  won Int [not null, default: 0]
+  drawn Int [not null, default: 0]
+  lost Int [not null, default: 0]
+  points Int [not null, default: 0]
+  goalsFor Int [not null, default: 0]
+  goalsAgainst Int [not null, default: 0]
+  goalDifference Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table formation_position {
+  id String [pk]
+  formationSchemeId String [not null]
+  formationScheme formation_scheme [not null]
+  positionId String [not null]
+  position position_field [not null]
+  count Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (formationSchemeId, positionId) [unique]
+  }
+}
+
+Table tournament_type {
+  id String [pk]
+  name String [not null]
+  Tournament tournament [not null]
+}
+
+Table tournament_level {
+  id String [pk]
+  name String [not null]
+  Tournament tournament [not null]
+}
+
+Table tournament_format {
+  id String [pk]
+  name String [not null]
+  Tournament tournament [not null]
+}
+
+Table age_category {
+  id String [pk]
+  name String [not null]
+  Team team [not null]
+  Tournament tournament [not null]
+  NationalTeam national_team [not null]
+}
+
+Table match_event_type {
+  id String [pk]
+  name String [not null]
+  MatchEvent match_event [not null]
+}
+
+Table gender_type {
+  id String [pk]
+  name String [not null]
+  Tournament tournament [not null]
+  Team team [not null]
+}
+
+Table format_team {
+  id String [pk]
+  name String [not null]
+  Team team [not null]
+}
+
+Table position_field {
+  id String [pk]
+  name String [not null]
+  Player player [not null]
+  PlayerPosition player_position [not null]
+  FormationPosition formation_position [not null]
+}
+
+Table tiebreaker_criteria {
+  id String [pk]
+  name String [not null]
+  Tournament tournament [not null]
+}
+
+Table player_health_status {
+  id String [pk]
+  name String [not null]
+  PlayerCondition player_condition [not null]
+  NationalTeamSquad national_team_squad [not null]
+}
+
+Table team_type {
+  id String [pk]
+  name String [not null]
+  Match match [not null]
+  Team team [not null]
+}
+
+Table match_status {
+  id String [pk]
+  name String [not null]
+  Match match [not null]
+}
+
+Table stage_type {
+  id String [pk]
+  name String [not null]
+  Stage stage [not null]
+}
+
+Table formation_scheme {
+  id String [pk]
+  formation String [not null]
+  label String [not null]
+  tacticalFormations tactical_formation [not null]
+  formationPositions formation_position [not null]
+}
+
+Table SportToUser {
+  sportsId String [ref: > sport.id]
+  usersId String [ref: > users.id]
+}
+
+Table TournamentToUser {
+  tournamentId String [ref: > tournament.id]
+  usersId String [ref: > users.id]
+}
+
+Table ClubToUser {
+  clubsId String [ref: > club.id]
+  usersId String [ref: > users.id]
+}
+
+Table TeamToTournament {
+  teamsId String [ref: > team.id]
+  tournamentsId String [ref: > tournament.id]
+}
+
+Table ClubToGroup {
+  groupsId String [ref: > group.id]
+  clubsId String [ref: > club.id]
+}
+
+Ref: users.roleId > user_role.id
+
+Ref: user_otp.userId - users.id
+
+Ref: tournament.countryId > country.id
+
+Ref: tournament.genderId > gender_type.id
+
+Ref: tournament.typeId > tournament_type.id
+
+Ref: tournament.levelId > tournament_level.id
+
+Ref: tournament.formatId > tournament_format.id
+
+Ref: tournament.categoryId > age_category.id
+
+Ref: tournament.tiebreakerCriteriaId > tiebreaker_criteria.id
+
+Ref: tournament.sportId > sport.id
+
+Ref: tournament.seasonId > season.id
+
+Ref: team.teamTypeId > team_type.id
+
+Ref: team.genderId > gender_type.id
+
+Ref: team.venueId > venue.id
+
+Ref: team.clubId > club.id
+
+Ref: team.sportId > sport.id
+
+Ref: team.ageCategoryId > age_category.id
+
+Ref: team.formatId > format_team.id
+
+Ref: team.captainId - player.id
+
+Ref: team.viceCaptainId - player.id
+
+Ref: team.coachId - coach.id
+
+Ref: match.venueId > venue.id
+
+Ref: match.refereeId > referee.id
+
+Ref: match.teamTypeid > team_type.id
+
+Ref: match.homeTeamId > team.id
+
+Ref: match.awayTeamId > team.id
+
+Ref: match.statusId > match_status.id
+
+Ref: match.matchdayId > matchday.id
+
+Ref: tactical_formation.matchId > match.id
+
+Ref: tactical_formation.teamId > team.id
+
+Ref: tactical_formation.formationSchemeId > formation_scheme.id
+
+Ref: player_convocation.matchId > match.id
+
+Ref: player_convocation.playerId > player.id
+
+Ref: player_convocation.playerConditionId > player_condition.id
+
+Ref: player_position.matchId > match.id
+
+Ref: player_position.teamId > team.id
+
+Ref: player_position.playerId > player.id
+
+Ref: player_position.positionId > position_field.id
+
+Ref: player_position.formationId > tactical_formation.id
+
+Ref: player_perfomance.matchId > match.id
+
+Ref: player_perfomance.playerId > player.id
+
+Ref: match_stats.matchId > match.id
+
+Ref: stage.typeId > stage_type.id
+
+Ref: stage.tournamentId > tournament.id
+
+Ref: group.stageId > stage.id
+
+Ref: matchday.stageId > stage.id
+
+Ref: player.positionId > position_field.id
+
+Ref: player.primaryNationalityId > country.id
+
+Ref: player.teamId > team.id
+
+Ref: player_stats.playerId > player.id
+
+Ref: player_stats.matchId > match.id
+
+Ref: player_condition.playerId > player.id [delete: Cascade]
+
+Ref: player_condition.statusId > player_health_status.id
+
+Ref: coach.clubId > club.id
+
+Ref: news.clubId > club.id
+
+Ref: news.playerId > player.id
+
+Ref: news.tournamentId > tournament.id
+
+Ref: news.coachId > coach.id
+
+Ref: news.refereeId > referee.id
+
+Ref: match_event.typeId > match_event_type.id
+
+Ref: match_event.matchId > match.id
+
+Ref: match_event_player.eventId > match_event.id
+
+Ref: match_event_player.playerId > player.id
+
+Ref: national_team.countryId > country.id
+
+Ref: national_team.ageCategoryId > age_category.id
+
+Ref: national_team.teamId > team.id [delete: Cascade]
+
+Ref: national_team_squad.nationalTeamId > national_team.id
+
+Ref: national_team_squad.playerId > player.id [delete: Cascade]
+
+Ref: national_team_squad.statusId > player_health_status.id
+
+Ref: national_team_squad.coachId > coach.id
+
+Ref: national_team_squad.teamId > team.id
+
+Ref: league_standing.tournamentId > tournament.id
+
+Ref: league_standing.teamId > team.id
+
+Ref: formation_position.formationSchemeId > formation_scheme.id
+
+Ref: formation_position.positionId > position_field.id

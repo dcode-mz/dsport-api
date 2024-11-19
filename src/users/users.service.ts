@@ -47,6 +47,12 @@ export class UsersService {
     try {
       const user = await this.prismaService.user.create({
         data: createUserDto,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
       });
 
       return user;
@@ -58,7 +64,7 @@ export class UsersService {
     }
   }
 
-  async createUserOtp(id: string, otp: string, otpExpiry: Date): Promise<any> {
+  async createUserOtp(id: string, otp: string, otpExpiry: Date): Promise<void> {
     try {
       await this.prismaService.userOtp.create({
         data: {

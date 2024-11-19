@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateSportDto } from './dto/create-sport.dto';
 import { UpdateSportDto } from './dto/update-sport.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -51,13 +51,34 @@ export class SportService {
     return user;
   }
 
-  async findSportsWithTournaments() {
-    const sports = await this.prismaService.sport.findMany({
-      include: {
-        tournaments: true,
-      },
-    });
-    return sports;
+  async findSportsWithTournaments(): Promise<
+    ResponseBody<SportsTournamentsResponse[]>
+  > {
+    try {
+      const sports = await this.prismaService.sport.findMany({
+        select: {
+          id: true,
+          name: true,
+          icon: true,
+          tournaments: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              logo: true,
+              organizer: true,
+            },
+          },
+        },
+      });
+      return new ResponseBody<SportsTournamentsResponse[]>(
+        'Consulta de desportos feita com sucesso',
+        sports,
+        true,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(`Algo deu errado: ${error}`);
+    }
   }
 
   // async findSportsWithTournamentsAndClubs() {
@@ -104,17 +125,39 @@ export class SportService {
     try {
       sport = await this.prismaService.sport.findUnique({
         where: { id: idSport },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
           tournaments: {
-            include: {
-              stage: {
-                include: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+              stages: {
+                select: {
                   matchdays: {
-                    include: {
+                    select: {
                       matches: {
-                        include: {
-                          homeTeam: true,
-                          awayTeam: true,
+                        select: {
+                          id: true,
+                          dateTime: true,
+                          homeTeam: {
+                            select: {
+                              id: true,
+                              club: {
+                                select: { id: true, name: true, logo: true },
+                              },
+                            },
+                          },
+                          awayTeam: {
+                            select: {
+                              id: true,
+                              club: {
+                                select: { id: true, name: true, logo: true },
+                              },
+                            },
+                          },
                         },
                       },
                     },
@@ -140,7 +183,7 @@ export class SportService {
     let groupedData;
     try {
       groupedData = sport.tournaments.flatMap((tournament) =>
-        tournament.stage.flatMap((stage) =>
+        tournament.stages.flatMap((stage) =>
           stage.matchdays.flatMap((matchday) =>
             matchday.matches
               .filter((match) => {
@@ -152,11 +195,21 @@ export class SportService {
                 );
               })
               .map((match) => ({
+                id: tournament.id,
                 tournament: tournament.name,
                 logo: tournament.logo,
                 match: {
-                  homeTeam: match.homeTeam,
-                  awayTeam: match.awayTeam,
+                  id: match.id,
+                  homeTeam: {
+                    id: match.homeTeam.id,
+                    name: match.homeTeam.club.name,
+                    logo: match.homeTeam.club.logo,
+                  },
+                  awayTeam: {
+                    id: match.awayTeam.id,
+                    name: match.awayTeam.club.name,
+                    logo: match.awayTeam.club.logo,
+                  },
                   time: format(new Date(match.dateTime), 'HH:mm'),
                 },
               })),
@@ -187,6 +240,7 @@ export class SportService {
             existingTournament.matches.push(curr.match);
           } else {
             acc.tournaments.push({
+              id: curr.id,
               name: curr.tournament,
               logo: curr.logo,
               matches: [curr.match],
@@ -214,7 +268,7 @@ export class SportService {
       include: {
         tournaments: {
           include: {
-            stage: {
+            stages: {
               include: {
                 matchdays: {
                   include: {
@@ -247,7 +301,7 @@ export class SportService {
     // Agrupamento dos jogos por data e torneio
     const groupedData = sport.tournaments
       .flatMap((tournament) =>
-        tournament.stage.flatMap((stage) =>
+        tournament.stages.flatMap((stage) =>
           stage.matchdays.flatMap((matchday) =>
             matchday.matches.map((match) => ({
               date: format(new Date(match.dateTime), 'dd-MM-yyyy'),
