@@ -81,30 +81,43 @@ export class SportService {
     }
   }
 
-  // async findSportsWithTournamentsAndClubs() {
-  //   const sports = await this.prismaService.sport.findMany({
-  //     include: {
-  //       tournaments: {
-  //         include: {
-  //           clubs: {
-  //             select: {
-  //               id: true,
-  //               name: true,
-  //               shortName: true,
-  //               logo: true,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
-  //   return sports.map((sport) => ({
-  //     id: sport.id,
-  //     name: sport.name,
-  //     icon: sport.icon,
-  //     clubs: sport.tournaments.flatMap((tournament) => tournament.clubs),
-  //   }));
-  // }
+  async findSportsWithTournamentsAndClubs() {
+    const sports = await this.prismaService.sport.findMany({
+      include: {
+        tournaments: {
+          include: {
+            teams: {
+              select: {
+                club: {
+                  select: {
+                    id: true,
+                    name: true,
+                    shortName: true,
+                    logo: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const sportsMap = sports.map((sport) => ({
+      id: sport.id,
+      name: sport.name,
+      icon: sport.icon,
+      clubs: sport.tournaments.flatMap((tournament) =>
+        tournament.teams.flatMap((team) => team.club),
+      ),
+    }));
+
+    return new ResponseBody<SportsClubsResponse[]>(
+      'Consulta de desportos feita com sucesso',
+      sportsMap,
+      true,
+    );
+  }
 
   async getMatchesBySportAndDate(idSport: string, date: string) {
     if (!idSport || !date) {

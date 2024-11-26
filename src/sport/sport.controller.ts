@@ -48,10 +48,13 @@ export class SportController {
     res.status(HttpStatus.OK).json(response);
   }
 
-  // @Get('clubs')
-  // findSportsWithTournamentsAndClubs() {
-  //   return this.sportService.findSportsWithTournamentsAndClubs();
-  // }
+  @Get('clubs')
+  async findSportsWithTournamentsAndClubs(@Res() res: Response) {
+    const response: ResponseBody<SportsClubsResponse[]> =
+      await this.sportService.findSportsWithTournamentsAndClubs();
+
+    res.status(HttpStatus.OK).json(response);
+  }
 
   @Get(':id/matches')
   async getMatchesBySport(
@@ -66,24 +69,6 @@ export class SportController {
 
     res.status(HttpStatus.OK).json(response);
   }
-
-  // @UseGuards(LocalAuthGuard)
-  // @Post('login')
-  // async login(@Request() req, @Res() res: Response) {
-  //   const user = req.user as UserDto;
-  //   const { access_token } = await this.authService.login(user);
-  //   const response = new ResponseBody<LoginResponse>(
-  //     'Logado com sucesso',
-  //     { user, access_token },
-  //     true,
-  //   );
-  //   res.status(HttpStatus.OK).json(response);
-  // }
-
-  // @Get('tournaments')
-  // findSportsWithTournaments(@Query('ids', new ParseArrayPipe({ items: String, separator: ',' })) ids: string[]) {
-  //   return this.sportService.findSportsWithTournaments(ids);
-  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
