@@ -37,9 +37,11 @@ export class TeamService {
           sport: { connect: { id: sportId } },
           ageCategory: { connect: { id: ageCategoryId } },
           format: { connect: { id: formatId } },
-          captain: { connect: { id: captainId } },
-          viceCaptain: { connect: { id: viceCaptainId } },
-          coach: { connect: { id: coachId } },
+          ...(captainId && { captain: { connect: { id: captainId } } }),
+          ...(viceCaptainId && {
+            viceCaptain: { connect: { id: viceCaptainId } },
+          }),
+          ...(coachId && { coach: { connect: { id: coachId } } }),
         },
       });
 

@@ -39,6 +39,7 @@ async function bootstrap() {
     .addTag('match')
     .addTag('match-events')
     .addTag('matchday')
+    .addTag('news')
     .addTag('auth')
     .build();
   const document = SwaggerModule.createDocument(app, config);

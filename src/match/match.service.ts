@@ -76,9 +76,9 @@ export class MatchService {
     return matchSet.size === matches.length;
   }
 
-  private async generateFixtures(teamIds: string[]): Promise<FixturesDto[]> {
+  private async generateFixtures(tournamentId: string): Promise<FixturesDto[]> {
     const teams: TeamDto[] = await this.prismaService.team.findMany({
-      where: { id: { in: teamIds } },
+      where: { tournaments: { every: { id: tournamentId } } },
       include: {
         club: {
           select: {
@@ -161,7 +161,7 @@ export class MatchService {
 
   async generateMatchday(generateFixturesDto: GenerateFixturesDto) {
     const fixtures: FixturesDto[] = await this.generateFixtures(
-      generateFixturesDto.teams,
+      generateFixturesDto.tournamentId,
     );
 
     const startDate = new Date(new Date().getFullYear(), 0, 1);
@@ -190,7 +190,7 @@ export class MatchService {
           data: {
             name: 'Regular Season',
             order: 1,
-            type: { connect: { id: 'f25ebcb4-0912-486f-adc4-85ab9c915bc7' } },
+            type: { connect: { id: 'e298fd0d-2b62-42f1-86eb-e16af1156f4a' } },
             hasMatchdays: true,
             homeAndAway: false,
             tournament: {
@@ -205,8 +205,8 @@ export class MatchService {
 
     // Transformando a criação dos jogos em um mapeamento para evitar uso de forEach com async
     const matchPromises = fixtures.flatMap((fixture) =>
-      fixture.matches.map((match) =>
-        this.prismaService.match.create({
+      fixture.matches.map((match) => {
+        return this.prismaService.match.create({
           data: {
             dateTime: new Date(
               startDate.getTime() + fixture.round * roundDuration,
@@ -214,7 +214,7 @@ export class MatchService {
             venue: { connect: { id: match.homeTeam.venue.id } },
             location: match.homeTeam.location,
             referee: {
-              connect: { id: 'c24dfb44-e28b-4fb0-a2d2-c2f9cae5072b' },
+              connect: { id: '98607c34-e199-4927-ad41-df16aff496c9' },
             },
             teamType: { connect: { id: match.homeTeam.teamType.id } },
             attendance: 1000,
@@ -224,9 +224,10 @@ export class MatchService {
             awayTeam: {
               connect: { id: match.awayTeam.id },
             },
-            status: { connect: { id: 'e9f1c6cf-73b6-47d0-96b9-180f9227eaac' } },
+            status: { connect: { id: 'fbf32190-4170-479d-b97c-ddb99e123c1a' } },
             numberPeriods: 2,
             durationPerPeriod: 45,
+            halfTimeDuration: 15,
             matchday: {
               create: {
                 number: fixture.round,
@@ -238,8 +239,8 @@ export class MatchService {
               },
             },
           },
-        }),
-      ),
+        });
+      }),
     );
 
     // Executando todas as promessas de criação dos jogos simultaneamente

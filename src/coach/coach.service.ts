@@ -8,10 +8,17 @@ export class CoachService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createCoachDto: CreateCoachDto) {
-    const { name, dateOfBirth, nationality, photoUrl, clubId, teamId } =
+    const { name, dateOfBirth, nationalityId, photoUrl, clubId, teamId } =
       createCoachDto;
     const coach = await this.prismaService.coach.create({
-      data: { name, dateOfBirth, nationality, photoUrl, clubId, teamId },
+      data: {
+        name,
+        dateOfBirth,
+        nationality: { connect: { id: nationalityId } },
+        photoUrl,
+        club: { connect: { id: clubId } },
+        team: { connect: { id: teamId } },
+      },
     });
     return coach;
   }

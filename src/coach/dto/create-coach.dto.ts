@@ -16,11 +16,11 @@ export class CreateCoachDto {
   dateOfBirth: Date;
 
   @ApiProperty({
-    description: 'Nacionalidade do treinador',
-    example: 'Português',
+    description: 'ID da nacionalidade do treinador',
+    example: 'c1d2e3f4-g5h6-i7j8-k9l0-m1n2o3p4q5r6',
   })
-  @IsString()
-  nationality: string;
+  @IsUUID()
+  nationalityId: string;
 
   @ApiProperty({
     description: 'URL da foto do treinador',

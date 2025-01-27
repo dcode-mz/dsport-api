@@ -98,7 +98,7 @@ Table club {
   news news [not null]
   users users [not null]
   groups group [not null]
-  coachs coach [not null]
+  coaches coach [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -365,12 +365,13 @@ Table coach {
   id String [pk]
   name String [not null]
   dateOfBirth DateTime [not null]
-  nationality String [not null]
+  nationalityId String [not null]
+  nationality country [not null]
   photoUrl String
   team team
   teamId String
   clubId String
-  Club club
+  club club
   news news [not null]
   nationalTeamSquad national_team_squad [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -381,7 +382,8 @@ Table referee {
   id String [pk]
   name String [not null]
   dateOfBirth DateTime
-  nationality String [not null]
+  nationalityId String [not null]
+  nationality country [not null]
   photoUrl String
   news news [not null]
   matches match [not null]
@@ -472,6 +474,8 @@ Table country {
   nationalTeams national_team [not null]
   tournaments tournament [not null]
   players player [not null]
+  referees referee [not null]
+  coaches coach [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -733,7 +737,11 @@ Ref: player_condition.playerId > player.id [delete: Cascade]
 
 Ref: player_condition.statusId > player_health_status.id
 
+Ref: coach.nationalityId > country.id
+
 Ref: coach.clubId > club.id
+
+Ref: referee.nationalityId > country.id
 
 Ref: news.clubId > club.id
 

@@ -8,9 +8,14 @@ export class RefereeService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createRefereeDto: CreateRefereeDto) {
-    const { name, dateOfBirth, nationality, photoUrl } = createRefereeDto;
+    const { name, dateOfBirth, nationalityId, photoUrl } = createRefereeDto;
     const referee = await this.prismaService.referee.create({
-      data: { name, dateOfBirth, nationality, photoUrl },
+      data: {
+        name,
+        dateOfBirth,
+        nationality: { connect: { id: nationalityId } },
+        photoUrl,
+      },
     });
     return referee;
   }

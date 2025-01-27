@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
-import { TeamDto } from './team.dto';
+import { IsString } from 'class-validator';
 
 export class GenerateFixturesDto {
   @ApiProperty({
@@ -17,12 +16,4 @@ export class GenerateFixturesDto {
   @IsString()
   @IsString()
   tournamentId: string;
-
-  @ApiProperty({
-    description: 'Lista de Equipas do torneio',
-    type: [String],
-    example: ['idTeam1', 'idTeam2'],
-  })
-  @IsArray()
-  teams: string[];
 }

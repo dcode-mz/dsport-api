@@ -17,9 +17,12 @@ export class CreateRefereeDto {
   @Type(() => Date)
   dateOfBirth?: Date;
 
-  @ApiProperty({ description: 'Nacionalidade do árbitro', example: 'Italiana' })
-  @IsString()
-  nationality: string;
+  @ApiProperty({
+    description: 'ID da nacionalidade do árbitro',
+    example: 'c1d2e3f4-g5h6-i7j8-k9l0-m1n2o3p4q5r6',
+  })
+  @IsUUID()
+  nationalityId: string;
 
   @ApiProperty({
     description: 'URL da foto do árbitro',
