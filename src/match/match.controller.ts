@@ -38,8 +38,14 @@ export class MatchController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.matchService.findOne(+id);
+    return this.matchService.findOne(id);
   }
+
+  @Get('details/:id')
+  findOneMatchDetails(@Param('id') id: string) {
+    return this.matchService.findOneMatchDetails(id);
+  }
+  s;
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMatchDto: UpdateMatchDto) {

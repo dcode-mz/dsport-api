@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
-import { ClubService } from 'src/club/club.service';
+// import { ClubService } from 'src/club/club.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GenerateFixturesDto } from './dto/generate-fixtures.dto';
-import { TeamService } from 'src/team/team.service';
+// import { TeamService } from 'src/team/team.service';
 import { TeamDto } from './dto/team.dto';
+import { ResponseBody } from 'src/common/dto/ResponseBody';
+import { MatchDetailsDto } from './dto/match-details.dto';
 
 class FixturesDto {
   round: number;
@@ -15,8 +17,8 @@ class FixturesDto {
 @Injectable()
 export class MatchService {
   constructor(
-    private readonly clubService: ClubService,
-    private readonly teamService: TeamService,
+    // private readonly clubService: ClubService,
+    // private readonly teamService: TeamService,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -28,8 +30,178 @@ export class MatchService {
     return this.prismaService.match.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} match`;
+  findOne(id: string) {
+    return this.prismaService.match.findFirst({
+      where: { id: id },
+    });
+  }
+
+  async findOneMatchDetails(
+    id: string,
+  ): Promise<ResponseBody<MatchDetailsDto>> {
+    const matchDetails = await this.prismaService.match.findFirst({
+      where: { id: id },
+      select: {
+        id: true,
+        dateTime: true,
+        venue: {
+          select: { id: true, name: true, location: true, capacity: true },
+        },
+        referee: {
+          select: {
+            id: true,
+            name: true,
+            photoUrl: true,
+            nationality: { select: { id: true, name: true, logo: true } },
+          },
+        },
+        attendance: true,
+        teamType: { select: { id: true, name: true } },
+        homeTeam: {
+          select: {
+            id: true,
+            club: {
+              select: { id: true, name: true, logo: true, shortName: true },
+            },
+            gender: { select: { id: true, name: true } },
+            players: {
+              select: {
+                id: true,
+                name: true,
+                nickname: true,
+                jersey_number_club: true,
+                photoUrl: true,
+              },
+              where: {
+                convocations: { every: { matchId: id, calledUp: true } },
+              },
+            },
+          },
+        },
+        awayTeam: {
+          select: {
+            id: true,
+            club: {
+              select: { id: true, name: true, logo: true, shortName: true },
+            },
+            gender: { select: { id: true, name: true } },
+            players: {
+              select: {
+                id: true,
+                name: true,
+                nickname: true,
+                jersey_number_club: true,
+                photoUrl: true,
+              },
+            },
+          },
+        },
+        resultHomeTeam: true,
+        resultAwayTeam: true,
+        status: { select: { id: true, name: true } },
+        matchday: { select: { id: true, number: true } },
+        numberPeriods: true,
+        durationPerPeriod: true,
+        halfTimeDuration: true,
+        matchStats: {
+          select: {
+            id: true,
+            homeScore: true,
+            awayScore: true,
+            shotsHome: true,
+            shotsAway: true,
+            possessionHome: true,
+            possessionAway: true,
+            foulsHome: true,
+            foulsAway: true,
+            yellowCardsHome: true,
+            yellowCardsAway: true,
+            redCardsHome: true,
+            redCardsAway: true,
+            cornersHome: true,
+            cornersAway: true,
+          },
+        },
+        // playerStats: { select: { id: true, player: { select: { id: true, }},  } }
+        events: {
+          select: {
+            id: true,
+            type: { select: { id: true, name: true } },
+            time: true,
+            details: true,
+            players: {
+              select: {
+                id: true,
+                player: {
+                  select: {
+                    id: true,
+                    name: true,
+                    team: {
+                      select: {
+                        id: true,
+                        club: { select: { id: true, name: true } },
+                      },
+                    },
+                  },
+                },
+                role: true,
+              },
+            },
+          },
+        },
+        perfomances: {
+          select: {
+            id: true,
+            player: { select: { id: true, name: true, photoUrl: true } },
+            isMVP: true,
+            score: true,
+          },
+        },
+        convocations: {
+          select: {
+            id: true,
+            player: { select: { id: true, name: true, photoUrl: true } },
+            playerCondition: {
+              select: {
+                status: { select: { id: true, name: true } },
+                injuryDate: true,
+                returnDate: true,
+                notes: true,
+              },
+            },
+            calledUp: true,
+            absenceReason: true,
+          },
+        },
+        formations: {
+          select: {
+            id: true,
+            team: { select: { id: true, name: true } },
+            formationScheme: {
+              select: { id: true, formation: true, label: true },
+            },
+            positions: {
+              select: {
+                id: true,
+                team: { select: { id: true, name: true } },
+                player: { select: { id: true, name: true } },
+                starter: true,
+                onField: true,
+              },
+              where: { matchId: id },
+            },
+          },
+          where: { matchId: id },
+        },
+      },
+    });
+
+    const response = new ResponseBody<MatchDetailsDto>(
+      'Consulta do detalhe do jogo feita com sucesso',
+      matchDetails,
+      true,
+    );
+    return response;
   }
 
   update(id: number, updateMatchDto: UpdateMatchDto) {

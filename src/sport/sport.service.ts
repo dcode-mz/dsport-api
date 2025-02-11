@@ -229,14 +229,6 @@ export class SportService {
           ),
         ),
       );
-
-      if (groupedData.length === 0) {
-        return new ResponseBody(
-          'Nenhuma partida encontrada para a data especificada.',
-          null,
-          true,
-        );
-      }
     } catch (error) {
       return { message: 'Erro ao processar os dados das partidas.' };
     }
